@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'categories' => 'Categorías',
+    'products' => 'Productos',
+    'home' => 'Inicio',
+    'products_from' => 'Productos del',
+    'to' => 'al',
+    'of' => 'de',
+    'results' => 'resultados',
+    'per_page' => 'Productos por página',
+    'sort_by' => 'Ordenar por',
+    'date' => 'Fecha',
+    'price' => 'Precio',
+    'name' => 'Nombre del producto',
+    'asc' => 'Ascendente',
+    'desc' => 'Descendente',
+    'load_more' => 'Cargar más',
+    'no_results' => 'Sin resultados',
+    'add_to_cart' => 'Añadir al carrito',
+    'already_in_cart' => 'Ya en tu carrito',
+    'offer' => 'oferta',
+    'view_grid' => 'Vista cuadrícula',
+    'view_list' => 'Vista lista',
+    'discover_more' => 'Saber más',
+    'sold_out'      => 'SOLD OUT',
+    'related_products' => 'Productos relacionados',
+    'see_all_results' => 'Ver todos los resultados',
+    'perizie_cta_text' => 'Si deseas <strong>peritar, catalogar</strong> y <strong>valorar</strong> tus <strong>monedas, billetes</strong> y <strong>medallas</strong> de colección',
+    'perizie_cta_btn' => 'Visita el sitio oficial del perito Umberto Moruzzi',
+    'perizie_cta_btn_title' => 'Visita el sitio oficial del perito y estudioso numismático Umberto Moruzzi',
+];
+

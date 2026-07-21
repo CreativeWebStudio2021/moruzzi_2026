@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'categories' => 'Kategorien',
+    'products' => 'Produkte',
+    'home' => 'Startseite',
+    'products_from' => 'Produkte von',
+    'to' => 'bis',
+    'of' => 'von',
+    'results' => 'Ergebnisse',
+    'per_page' => 'Produkte pro Seite',
+    'sort_by' => 'Sortieren nach',
+    'date' => 'Datum',
+    'price' => 'Preis',
+    'name' => 'Produktname',
+    'asc' => 'Aufsteigend',
+    'desc' => 'Absteigend',
+    'load_more' => 'Mehr laden',
+    'no_results' => 'Keine Ergebnisse',
+    'add_to_cart' => 'In den Warenkorb',
+    'already_in_cart' => 'Bereits im Warenkorb',
+    'offer' => 'Angebot',
+    'view_grid' => 'Rasteransicht',
+    'view_list' => 'Listenansicht',
+    'discover_more' => 'Mehr erfahren',
+    'sold_out'      => 'SOLD OUT',
+    'related_products' => 'Ähnliche Produkte',
+    'see_all_results' => 'Alle Ergebnisse anzeigen',
+    'perizie_cta_text' => 'Wenn Sie Ihre <strong>Münzen, Banknoten</strong> und <strong>Medaillen</strong> schätzen, katalogisieren und bewerten lassen möchten',
+    'perizie_cta_btn' => 'Besuchen Sie die offizielle Website von Umberto Moruzzi',
+    'perizie_cta_btn_title' => 'Besuchen Sie die offizielle Website des Numismatik-Experten und -Gelehrten Umberto Moruzzi',
+];
+

@@ -1,0 +1,5 @@
+RewriteEngine On
+RewriteBase /admin/
+
+RewriteRule amministrazione-logout.html	admin.php?cmd=destroy [L]
+RewriteRule amministrazione.html admin.php [L]

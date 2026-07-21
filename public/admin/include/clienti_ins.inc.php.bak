@@ -1,0 +1,178 @@
+<?php 
+/*require_once '../barcode/barcode.inc.php';*/
+
+$table=$prec_db."clienti";
+$pagina="clienti";
+$rif="";
+
+if(isset($_GET['nome_ric'])) $nome_ric=$_GET['nome_ric']; else $nome_ric='';
+if(isset($_GET['cognome_ric'])) $cognome_ric=$_GET['cognome_ric']; else $cognome_ric='';
+if(isset($_GET['ragsoc_ric'])) $ragsoc_ric=$_GET['ragsoc_ric']; else $ragsoc_ric='';
+if(isset($_GET['email_ric'])) $email_ric=$_GET['email_ric']; else $email_ric='';
+if(isset($_GET['pag_att'])) $pag_att=$_GET['pag_att']; else $pag_att=1;
+
+if($ragsoc_ric!="") { $criterio.=" AND rag_sociale LIKE '%$ragsoc_ric%'"; $rif.="&ragsoc_ric=$ragsoc_ric"; }
+if($cognome_ric) { $criterio.=" AND cognome LIKE '%$cognome_ric%'"; $rif.="&cognome_ric=$cognome_ric"; }
+if($nome_ric) { $criterio.=" AND nome LIKE '%$nome_ric%'"; $rif.="&nome_ric=$nome_ric"; }
+if($email_ric!="") { $criterio.=" AND email LIKE '%$email_ric%'"; $rif.="&email_ric=$email_ric"; }
+/*if($tipo_ric!="") { $criterio.=" AND tipologia='$tipo_ric'"; $rif.="&tipo_ric=$tipo_ric"; }*/
+$rif.="&pag_att=$pag_att";
+?>
+<script language="javascript">
+	function annulla(){
+		window.location='admin.php?cmd=<?php echo $pagina;?><?php echo $rif;?>&pag_att=<?php echo $pag_att;?>';
+	}
+</script>
+
+<script language="javascript">
+	function controllaPIVA( piva )
+	{
+		if ( piva.length == 11 )
+		{
+			var codiceUFFICIOiva = parseInt( piva.substr( 0, 3 ) ) ;
+			if ( codiceUFFICIOiva <= 0 || codiceUFFICIOiva > 121 ) return false ;
+		
+			var X = 0 ;
+			var Y = 0 ;
+			var Z = 0 ;
+		
+			// cifre posto dispari ... ma per un array indicizzato a zero, la prima cifra ha indice zero ... appunto !
+			X += parseInt( piva.charAt(0) ) ;
+			X += parseInt( piva.charAt(2) ) ;
+			X += parseInt( piva.charAt(4) ) ;
+			X += parseInt( piva.charAt(6) ) ;
+			X += parseInt( piva.charAt(8) ) ;
+
+			// cifre posto pari ... ma per un array indicizzato a zero, la prima cifra ha indice uno ...
+			Y += 2 * parseInt( piva.charAt(1) ) ;    if ( parseInt( piva.charAt(1) ) >= 5 ) Z++ ;
+			Y += 2 * parseInt( piva.charAt(3) ) ;    if ( parseInt( piva.charAt(3) ) >= 5 ) Z++ ;
+			Y += 2 * parseInt( piva.charAt(5) ) ;    if ( parseInt( piva.charAt(5) ) >= 5 ) Z++ ;
+			Y += 2 * parseInt( piva.charAt(7) ) ;    if ( parseInt( piva.charAt(7) ) >= 5 ) Z++ ;
+			Y += 2 * parseInt( piva.charAt(9) ) ;    if ( parseInt( piva.charAt(9) ) >= 5 ) Z++ ;
+			
+			var T = ( X + Y + Z ) % 10 ;
+
+			var C = ( 10 - T ) % 10 ;
+
+			return ( piva.charAt( piva.length - 1 ) == C ) ? true : false ;
+		}
+		else return false ;
+	}
+	
+	Filtro = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-]{2,})+\.)+([a-zA-Z0-9]{2,})+$/;
+	Filtro_piva = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-]{2,})+\.)+([a-zA-Z0-9]{2,})+$/;
+	function verifica(){
+		if (document.inserimento.nome.value=="" && document.inserimento.rag_sociale.value=="") alert('Nome o Rag. sociale obbigatori');
+		else if (document.inserimento.nome.value!="" && document.inserimento.cognome.value=="") alert('Cognome obbigatorio');
+		else if (document.inserimento.partita_iva.value!="" && controllaPIVA(document.inserimento.partita_iva.value)==false) alert('Inserire una partita iva corretta');	
+		else if (document.inserimento.email.value=="") alert('Email obbigatoria');	
+		else if (Filtro.test(document.inserimento.email.value)==false) alert("Inserire un indirizzo email corretto");	
+		else if (document.inserimento.password.value=="") alert('Password obbigatoria');	
+		else document.inserimento.submit();
+	}
+</script>
+<?php 
+if($stato=="inviato")
+{
+	$arr_no['stato']=1;
+	
+	$_POST['nome']=str_replace('"','\"',$_POST['nome']);
+	$_POST['nome'] = str_replace("è", "&egrave;", $_POST['nome']);
+	$_POST['nome'] = str_replace("é", "&eacute;", $_POST['nome']);
+	$_POST['nome'] = str_replace("à", "&agrave;", $_POST['nome']);
+	$_POST['nome'] = str_replace("ì", "&igrave;", $_POST['nome']);
+	$_POST['nome'] = str_replace("ò", "&ograve;", $_POST['nome']);
+	$_POST['nome'] = str_replace("ù", "&ugrave;", $_POST['nome']);	
+	
+	$_POST['cognome']=str_replace('"','\"',$_POST['cognome']);
+	$_POST['cognome'] = str_replace("è", "&egrave;", $_POST['cognome']);
+	$_POST['cognome'] = str_replace("é", "&eacute;", $_POST['cognome']);
+	$_POST['cognome'] = str_replace("à", "&agrave;", $_POST['cognome']);
+	$_POST['cognome'] = str_replace("ì", "&igrave;", $_POST['cognome']);
+	$_POST['cognome'] = str_replace("ò", "&ograve;", $_POST['cognome']);
+	$_POST['cognome'] = str_replace("ù", "&ugrave;", $_POST['cognome']);	
+		
+	$_POST['rag_sociale']=str_replace('"','\"',$_POST['rag_sociale']);
+	$_POST['rag_sociale'] = str_replace("è", "&egrave;", $_POST['rag_sociale']);
+	$_POST['rag_sociale'] = str_replace("é", "&eacute;", $_POST['rag_sociale']);
+	$_POST['rag_sociale'] = str_replace("à", "&agrave;", $_POST['rag_sociale']);
+	$_POST['rag_sociale'] = str_replace("ì", "&igrave;", $_POST['rag_sociale']);
+	$_POST['rag_sociale'] = str_replace("ò", "&ograve;", $_POST['rag_sociale']);
+	$_POST['rag_sociale'] = str_replace("ù", "&ugrave;", $_POST['rag_sociale']);	
+					
+	$oggetto_admin->inserisci_campi ("$table" , $arr_no ,  $arr_thumb="no");
+	
+	/* generazione del codice a barre associato al cliente 
+	$id_ultimo = mysql_insert_id();
+	
+	$nome_f="../barcode/img/barcode_".$id_ultimo.".png";
+	require("../barcode/php-barcode.php");
+	
+	function getvar($name){
+		global $_GET, $_POST;
+		if (isset($_GET[$name])) return $_GET[$name];
+		else if (isset($_POST[$name])) return $_POST[$name];
+		else return false;
+	}
+	
+	$code_number="";
+	for($i=1; $i<=12; $i++){
+		$code_number.=rand(0,9);
+	}
+	$code_number+=$id_ultimo;
+	
+	barcode_print($code_number,getvar('encoding'),getvar('scale'),getvar('mode'));*/
+?>
+	<script language="javascript">
+		window.location='admin.php?cmd=<?php echo $pagina;?><?php echo $rif;?>&pag_att=<?php echo $pag_att;?>';
+	</script>
+<?php 
+}
+else
+{
+?>
+<div class="mws-panel grid_8">
+	<div style="height:50px;font-size:1.2em;padding-top:10px"><b>Inserisci cliente</b></div>
+	<div class="mws-panel-header">
+		<span>Dati richiesti</span>
+	</div>
+	<div class="mws-panel-body no-padding">
+		<form name="inserimento" class="mws-form" action="admin.php?cmd=<?php echo $pagina;?>_ins<?php echo $rif;?>&pag_att=<?php echo $pag_att;?>" method="post" enctype="multipart/form-data">
+			<!--<div id="mws-validate-error" class="mws-form-message error" style="display:none;"></div>-->
+			<input type="hidden" name="stato" value="inviato">
+			<?php 
+			/*$ord_ev = $oggetto_admin->trova_ordine("$table");
+			echo '<input type="hidden" name="ordine" value="'.$ord_ev.'">';*/
+			echo '<input type="hidden" name="data_iscr" value="'.$data_att.'">';
+			echo '<input type="hidden" name="confermato" value="1">';			
+			?>
+			<div class="mws-form-inline">
+	<?php 
+				$oggetto_admin->campo_ins("Nome **" , "nome" , "2", 'no');
+				$oggetto_admin->campo_ins("Cognome" , "cognome" , "2", 'no');
+				$oggetto_admin->campo_ins("Rag. sociale **" , "rag_sociale" , "1", 'no');
+				$oggetto_admin->campo_ins("Partita IVA" , "partita_iva" , "2", 'no');		
+				$oggetto_admin->campo_ins("Cod. Fiscale" , "cod_fiscale" , "2", 'no');
+				$oggetto_admin->campo_ins("Indirizzo" , "indirizzo" , "1", 'no');
+				$oggetto_admin->campo_ins("CAP" , "cap" , "2", 'no');
+				$oggetto_admin->campo_ins("Città" , "citta" , "1", 'no');
+				$oggetto_admin->campo_ins("Provincia" , "provincia" , "2", 'no');
+				$oggetto_admin->campo_ins("Nazione" , "nazione" , "2", 'no');
+				$oggetto_admin->campo_ins("Telefono" , "telefono" , "2", 'no');
+				$oggetto_admin->campo_ins("E-mail *" , "email" , "1", 'no');
+				$oggetto_admin->campo_ins("Password *" , "password" , "2", 'no');
+	?>
+				<br/><br/>
+				<div style="margin-left:20px; padding-bottom:10px;">* <i>campi obbligatori</i></div>
+				<div style="margin-left:20px; padding-bottom:10px;">** <i>uno dei due campi &egrave; obbligatorio</i></div>
+			</div>
+			<div class="mws-button-row">
+				<input type="button" value="Inserisci" class="btn btn-danger" onclick="verifica()">
+				<input type="button" value="Annulla" class="btn" onclick="annulla()">
+			</div>
+		</form>
+	</div>
+</div>
+<?php 
+}
+?>

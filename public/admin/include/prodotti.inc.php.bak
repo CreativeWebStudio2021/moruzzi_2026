@@ -1,0 +1,595 @@
+<?
+$table=$prec_db."prodotti";
+$pagina="prodotti";
+
+$criterio="1";
+$rif="";
+
+if(isset($_GET['cat_ric'])) $cat_ric=$_GET['cat_ric']; else $cat_ric='';
+if($cat_ric!="") {
+	$criterio.=" AND categorie LIKE '%@$cat_ric@%'";
+	$rif.="&cat_ric=$cat_ric";
+}
+if(isset($_GET['nome_ric'])) $nome_ric=$_GET['nome_ric']; else $nome_ric='';
+if($nome_ric!="") {
+	$criterio.=" AND (name like '%$nome_ric%' OR sku like '%$nome_ric%')";
+	$rif.="&nome_ric=$nome_ric";
+}
+if(isset($_GET['visibilita_ric'])) $visibilita_ric=$_GET['visibilita_ric']; else $visibilita_ric="";
+if($visibilita_ric!="") {
+	if($visibilita_ric==1){
+		$criterio.=" AND (visibility='1' OR visibility='4') ";
+	}else{
+		$criterio.=" AND visibility='0'";
+	}
+	$rif.="&visibilita_ric=$visibilita_ric";
+}
+if(isset($_GET['evidenza_ric'])) $evidenza_ric=$_GET['evidenza_ric']; else $evidenza_ric="";
+if($evidenza_ric!="") {
+	if($evidenza_ric=="1")
+		$criterio.=" AND categorie LIKE '%@1435@%'";
+	else
+		$criterio.=" AND categorie NOT LIKE '%@1435@%'";
+	$rif.="&evidenza_ric=$evidenza_ric";
+}
+if(isset($_GET['offerta_ric'])) $offerta_ric=$_GET['offerta_ric']; else $offerta_ric="";
+if($offerta_ric!="") {
+	if($offerta_ric=="1")
+		$criterio.=" AND categorie LIKE '%@969@%'";
+	else
+		$criterio.=" AND categorie NOT LIKE '%@969@%'";
+	$rif.="&offerta_ric=$offerta_ric";
+}
+if(isset($_GET['qty_ric'])) $qty_ric=$_GET['qty_ric']; else $qty_ric="";
+if($qty_ric!="") {
+	if($qty_ric==0){
+		$criterio.=" AND qty=0";
+	}else{
+		$criterio.=" AND qty>0";
+	}
+	$rif.="&qty_ric=$qty_ric";
+}
+if(isset($_GET['novita_ric'])) $novita_ric=$_GET['novita_ric']; else $novita_ric="";
+if($novita_ric!="") {
+	$criterio.=" AND novita='$novita_ric'";
+	$rif.="&novita_ric=$novita_ric";
+}
+
+if(isset($_GET['pag_att'])) $pag_att=$_GET['pag_att']; else $pag_att=1;
+//$rif.="&pag_att=$pag_att";
+
+if($azione=="cancella" && $id_canc!="")
+{	
+	$query_canc_img = "select image from $table where entity_id='$id_canc'";
+	$risu_canc_img = $open_connection->connection->query($query_canc_img);
+	if ($risu_canc_img) {
+		list($img) = $risu_canc_img->fetch();
+		if (is_file("img_up/prodotti/$img")) @unlink("img_up/prodotti/$img");
+		if (is_file("img_up/prodotti/s_$img")) @unlink("img_up/prodotti/s_$img");
+	}
+	
+	$query_canc = "delete from $table where entity_id='$id_canc'";
+	$risu_canc = $open_connection->connection->query($query_canc);
+
+?>
+	<script language="javascript">		
+		//window.alert("Il campo e' stato cancellato con successo");
+		window.location="admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>";
+	</script>
+<?
+} 
+/*
+if ($id_canc) {	
+	if ($macro_ric!="" && $cat_ric!="") {
+		if($azione=="sali") $oggetto_admin->sali("$table", "$id_canc", "id_macro", "$macro_ric", "id_cat", "$cat_ric") ;
+		if($azione=="scendi") $oggetto_admin->scendi("$table", "$id_canc", "id_macro", "$macro_ric", "id_cat", "$cat_ric") ;
+		if($azione=="primo") $oggetto_admin->primo("$table", "$id_canc", "id_macro", "$macro_ric", "id_cat", "$cat_ric") ;
+		if($azione=="ultimo") $oggetto_admin->ultimo("$table", "$id_canc", "id_macro", "$macro_ric", "id_cat", "$cat_ric") ;
+		if($azione=="cambia") {
+			if(isset($_GET['new_pos'])) $new_pos=$_GET['new_pos']; else $new_pos="";
+			if($new_pos!="") $oggetto_admin->cambia("$table", "$id_canc", "$new_pos", "id_macro", "$macro_ric", "id_cat", "$cat_ric") ;	
+		}
+	} elseif ($macro_ric!="") {
+		if($azione=="sali") $oggetto_admin->sali("$table", "$id_canc", "id_macro", "$macro_ric") ;
+		if($azione=="scendi") $oggetto_admin->scendi("$table", "$id_canc", "id_macro", "$macro_ric") ;
+		if($azione=="primo") $oggetto_admin->primo("$table", "$id_canc", "id_macro", "$macro_ric") ;
+		if($azione=="ultimo") $oggetto_admin->ultimo("$table", "$id_canc", "id_macro", "$macro_ric") ;
+		if($azione=="cambia") {
+			if(isset($_GET['new_pos'])) $new_pos=$_GET['new_pos']; else $new_pos="";
+			if($new_pos!="") $oggetto_admin->cambia("$table", "$id_canc", "$new_pos", "id_macro", "$macro_ric") ;	
+		}
+	} else {
+		if($azione=="sali") $oggetto_admin->sali("$table", "$id_canc") ;
+		if($azione=="scendi") $oggetto_admin->scendi("$table", "$id_canc") ;
+		if($azione=="primo") $oggetto_admin->primo("$table", "$id_canc") ;
+		if($azione=="ultimo") $oggetto_admin->ultimo("$table", "$id_canc") ;
+		if($azione=="cambia") {
+			if(isset($_GET['new_pos'])) $new_pos=$_GET['new_pos']; else $new_pos="";
+			if($new_pos!="") $oggetto_admin->cambia("$table", "$id_canc", "$new_pos") ;	
+		}
+	}
+	
+	if($azione=="sali" || $azione=="scendi" || $azione=="primo" || $azione=="ultimo" || $azione=="cambia"){?>
+		<script type="text/javascript">
+			window.location='admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>';
+		</script>
+	<?}
+	
+	if ($azione=="attiva") $query_agg = $open_connection->connection->query("update $table set visibile='1' where id='$id_canc'");
+	if ($azione=="disattiva") $query_agg = $open_connection->connection->query("update $table set visibile='0' where id='$id_canc'");
+	
+	if ($azione=="attivan") $query_nov = $open_connection->connection->query("update $table set novita='1' where id='$id_canc'");
+	if ($azione=="disattivan") $query_nov = $open_connection->connection->query("update $table set novita='0' where id='$id_canc'");
+
+	if ($azione=="attivah") $query_home = $open_connection->connection->query("update $table set home='1' where id='$id_canc'");
+	if ($azione=="disattivah") $query_home = $open_connection->connection->query("update $table set home='0' where id='$id_canc'");
+}*/
+
+if($azione=="cancella_sel") {
+	if(isset($_GET['lista'])) $lista=$_GET['lista']; else $lista="";
+	$temp=explode(";",$lista);
+	for($z=0; $z<count($temp)-1; $z++){
+		$query_canc_img = "select image from $table where entity_id='".$temp[$z]."'";
+		$risu_canc_img = $open_connection->connection->query($query_canc_img);
+		if ($risu_canc_img) {
+			list($img) = $risu_canc_img->fetch();
+			if (is_file("img_up/prodotti/$img")) @unlink("img_up/prodotti/$img");
+			if (is_file("img_up/prodotti/s_$img")) @unlink("img_up/prodotti/s_$img");
+		}
+		
+		$query_canc = "delete from $table where entity_id='".$temp[$z]."'";
+		$risu_canc = $open_connection->connection->query($query_canc);
+	}?>
+		<script type="text/javascript">
+			window.location='admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>';
+		</script>
+	<?	
+}
+?>
+<script type="text/javascript">
+	var lista_ind=new Array();
+	var lista_del="";
+	var lista_tutti="";
+	function aggiungi_lista(id_check, id_campo){
+		if(document.getElementById('check_'+id_check).checked){
+			lista_del+=""+id_campo+";";
+		} else {
+			lista_del = lista_del.replace(id_campo+";", "");
+		}
+		if(lista_del!=""){
+			document.getElementById('cancella_sel').style.display="block";
+			document.getElementById('cancella_sel').href='admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>&azione=cancella_sel&lista='+lista_del;
+		}else{
+			document.getElementById('cancella_sel').style.display="none";
+		}
+	}
+	
+	function aggiugni_tutti(){
+		start = document.getElementById('start').innerHTML;
+		end = document.getElementById('end').innerHTML;
+		total = document.getElementById('total').innerHTML;
+		
+		if(document.getElementById('check_tutti').checked){
+			ind_lista = 0;
+			ind_check = 1;
+			for(i=start-1; i<end; i++){
+				lista_tutti+=lista_ind[ind_lista]+";";
+				ind_lista++;
+			}
+			for(i=start; i<=end; i++){
+				if(document.getElementById('check_'+ind_check))
+					document.getElementById('check_'+ind_check).checked=true;
+				ind_check++;
+			}
+			document.getElementById('cancella_sel').style.display="block";
+			document.getElementById('cancella_sel').href='admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>&azione=cancella_sel&lista='+lista_tutti;
+		}else{
+			lista_tutti="";
+			ind_check = 1;
+			for(i=start; i<=total; i++){
+				if(document.getElementById('check_'+ind_check))
+					document.getElementById('check_'+ind_check).checked=false;
+				ind_check++;
+			}
+			document.getElementById('cancella_sel').style.display="none";
+		}	
+	}
+</script>
+<div class="mws-panel grid_8">
+	<div style="height:50px;font-size:1.2em;padding-top:10px"><b><?=ucfirst($pagina);?></b></div>
+		
+	<div id="start" style="display:none"></div>
+	<div id="end" style="display:none"></div>
+	<div id="total" style="display:none"></div>
+	
+	<div class="mws-panel-header" style="cursor:pointer;" onclick="apri_ricerca();" id="searchHeader">
+		<span><i class="fa fa-search-plus" style="color:#fff"></i> Ricerca prodotti</span>
+	</div>
+	<div class="mws-panel-body no-padding" id="searchPanel">
+		<form name="ricerca" class="mws-form" action="admin.php" method="GET" enctype="multipart/form-data">
+			<input type="hidden" name="cmd" value="<?=$pagina;?>">
+			<input type="hidden" name="pag_att" value="<?=$pag_att;?>">
+			
+			<div class="mws-form-inline">					
+				<div class="mws-form-row">
+					<div style="float:left; width:15%;">
+						<label class="mws-form-label">Categoria</label>						
+					</div>
+					<div style="float:left; width:85%;">
+						<select name="cat_ric" class="small" style="width:90%">
+							<option value="">- Seleziona -</option>
+							<?printCategoryTreeSelect(2,$open_connection, $cat_ric);?>				
+						</select>
+					</div>
+					
+					<div style="clear:both;"></div>
+				</div>
+								
+				<div class="mws-form-row">					
+					<div style="float:left; width:15%;">
+						<label class="mws-form-label">Nome/Codice art.</label>
+					</div>
+					<div style="float:left; width:35%;">
+						<input type="text" name="nome_ric" value="<?=$nome_ric;?>" style="width:95%"/>
+					</div>	
+					
+					<div style="float:left; width:15%;">
+						<label class="mws-form-label">Visibili</label>
+					</div>
+					<div style="float:left; width:18%;">
+						<select name="visibilita_ric" class="small" style="width:90%">
+							<option value="">Tutti</option>
+							<option value="1" <?if($visibilita_ric=="1"){?>selected="selected"<?}?>>Si</option>
+							<option value="0" <?if($visibilita_ric=="0"){?>selected="selected"<?}?>>No</option>		
+						</select>
+					</div>
+					<div style="clear:both;"></div>
+				</div>
+				
+				<div class="mws-form-row">			
+					<div style="float:left; width:10%;">
+						<label class="mws-form-label">Offerta Speciale</label>
+					</div>
+					<div style="float:left; width:15%;">
+						<select name="offerta_ric" class="small" style="width:90%">
+							<option value="">Tutti</option>
+							<option value="1" <?if($offerta_ric=="1"){?>selected="selected"<?}?>>Si</option>
+							<option value="0" <?if($offerta_ric=="0"){?>selected="selected"<?}?>>No</option>	
+						</select>
+					</div>	
+					
+					<div style="float:left; width:10%;">
+						<label class="mws-form-label">In evidenza</label>
+					</div>
+					<div style="float:left; width:15%;">
+						<select name="evidenza_ric" class="small" style="width:90%">
+							<option value="">Tutti</option>
+							<option value="1" <?if($evidenza_ric=="1"){?>selected="selected"<?}?>>Si</option>
+							<option value="0" <?if($evidenza_ric=="0"){?>selected="selected"<?}?>>No</option>
+						</select>
+					</div>
+					
+					<div style="float:left; width:10%;">
+						<label class="mws-form-label">Novità</label>
+					</div>
+					<div style="float:left; width:15%;">
+						<select name="novita_ric" class="small" style="width:90%">
+							<option value="">Tutti</option>
+							<option value="1" <?if($novita_ric=="1"){?>selected="selected"<?}?>>Si</option>
+							<option value="0" <?if($novita_ric=="0"){?>selected="selected"<?}?>>No</option>
+						</select>
+					</div>
+					
+					<div style="float:left; width:10%;">
+						<label class="mws-form-label">Quantità</label>
+					</div>
+					<div style="float:left; width:15%;">
+						<select name="qty_ric" class="small" style="width:90%">
+							<option value="">Tutti</option>
+							<option value="1" <?if($qty_ric=="1"){?>selected="selected"<?}?>>Maggiore di 0</option>
+							<option value="0" <?if($qty_ric=="0"){?>selected="selected"<?}?>>0</option>
+						</select>
+					</div>
+					<div style="clear:both;"></div>
+				</div>				
+				
+			</div>
+			<div class="mws-button-row">
+				<input type="submit" value="Cerca" class="btn btn-danger">
+				<input type="button" value="Annulla" class="btn" onclick="window.location='admin.php?cmd=prodotti'">
+			</div>
+		</form>
+	</div>
+	
+	<div style="clear:both;height:30px">&nbsp;</div>
+	
+	<div style="height:40px;width:100%;text-align:right">
+		<a  class="btn" href="admin.php?cmd=<?=$pagina;?>_ins<?=$rif;?>&pag_att=<?=$pag_att;?>" style="color:#7a7a7a"><b>Aggiungi prodotto</b></a> &nbsp; 
+	</div>	
+	<div class="mws-panel-header">
+		<span><i class="icon-table"></i> Elenco <?=$pagina;?></span>
+	</div>
+	
+	<style>
+		.catList{
+			padding: 3px 10px; /* padding interno */
+			text-align: center; /* testo centrato */
+			display: inline-block;
+			white-space: nowrap; /* impedisce al testo di andare a capo */
+			background-color: #EFEFEF; /* colore di sfondo */
+			border-radius: 5px; /* angoli arrotondati */
+			transition: background-color 0.3s, color 0.3s; /* transizione per l'effetto hover */
+			text-decoration: none; /* rimuove la sottolineatura del link */
+			color: black; /* colore del testo */
+		}
+		.catList:hover {
+			background-color: #ccc; /* colore di sfondo al passaggio del mouse */
+			color: <?=$color1;?>; /* colore del testo al passaggio del mouse */
+		}
+	</style>
+	
+	<div class="mws-panel-body no-padding">
+		<table class="mws-datatable-fn mws-table">
+			<thead>
+				<tr>
+					<th style="width:20px"><input type="checkbox" id="check_tutti" onclick="aggiugni_tutti()"/></th>
+					<th style="width:120px;">Immagine</th>
+					<?/*<th>Codice art.</th>*/?>
+					<th style="text-align:left;">Prodotto</th>
+					<th style="text-align:left;">Categorie</th>
+					<th style="text-align:left;">Prezzo</th>
+					<th>Qty</th>
+					<th  style="width:20px">Gallery</th>
+					<th style="width:50px;">Visibile</th>
+					<th style="width:50px;">In evidenza</th>
+					<th style="width:50px;">OFFERTA</th>
+					<th style="width:50px;">Novità</th>
+					<th style="text-align:left;">Azioni</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?
+				$query_ele = "SELECT * FROM $table WHERE $criterio ORDER BY entity_id DESC";
+				$risu_ele = $open_connection->connection->query($query_ele);
+				
+				$rec_pag=0;					
+				$pag_tot=0;					
+				$start=0;
+				
+				$num_ele = 0;
+				if($risu_ele)
+					$num_ele = $risu_ele->rowCount();		
+				
+				if($num_ele>0)
+				{					  
+					$rec_pag=20;					
+					$pag_tot=ceil($num_ele/$rec_pag);					
+					$start=($pag_att-1)*$rec_pag;
+					$query_ele = "SELECT * FROM $table WHERE $criterio ORDER BY entity_id DESC LIMIT $start,$rec_pag";
+					//echo $query_ele;
+					$risu_ele = $open_connection->connection->query($query_ele);
+					$num_item=$risu_ele->rowCount();	
+					
+					for($x=0;$x<$num_item;$x++)
+					{		
+						$arr_ele = $risu_ele->fetch();
+						$nome = ucfirst($arr_ele['name']);
+						$id_campo = $arr_ele['entity_id'];
+						$img = $arr_ele['image'];
+						
+						$vis = $arr_ele['visibility'];
+						$cod = $arr_ele['sku'];
+						$categorie = $arr_ele['categorie'];
+						$prezzo = $arr_ele['price'];
+						$prezzo_offerta = $arr_ele['special_price'];
+						$qty = $arr_ele['qty'];
+						
+						$evidenza = 0;
+						if(str_contains($categorie, '@1435@')) $evidenza = 1;
+						
+						$offerta = 0;
+						if(str_contains($categorie, '@969@')) $offerta = 1;
+						
+						$novita = $arr_ele['novita'];
+												
+						$link_prod="";		
+			?>
+				<script type="text/javascript">
+					lista_ind[<?=$x;?>]="<?=$id_campo;?>";               
+				</script>
+				<tr class="riga_<?if($x % 2){?>pari<?}else{?>dispari<?}?>">
+					<td align="center" valign="center">
+						<input type="checkbox" id="check_<?=$x+1;?>" onclick="aggiungi_lista('<?=$x+1;?>','<?=$id_campo;?>')"/>
+					</td>
+					<td align="center" valign="center">
+						<?if(isset($video) && $video!=""){?>
+							<img src="https://i3.ytimg.com/vi/<?=$video;?>/maxresdefault.jpg" alt="<?=$nome;?>" style="width:150px"/>
+						<?}else{
+							if(isset($img) && file_exists("img_up/prodotti/$img")){?>
+								<img src="img_up/prodotti/<?if( file_exists("img_up/prodotti/s_$img")) echo "s_";?><?=$img;?>" alt="<?=$nome;?>" width="150px"/>
+							<?}
+						}?>
+					</td>
+					<!--<td><? echo $cod; ?></td>-->
+					<td >
+						<div>
+							<b><? echo $nome;?></b>
+							<?if ($cod!="") echo "<br/>Codice art: <b>$cod</b>"; ?>
+						</div>
+					</td>
+					<td style="text-align:left">
+						<div style="margin-top:5px">
+							<div style="display: flex; gap: 5px; flex-wrap: wrap;">							
+								<?
+								$criterio_cat = "";
+								$temp = explode("@@",$categorie);
+								for($i=0; $i<count($temp); $i++){
+									$criterio_cat .= " entity_id='".str_replace("@","",$temp[$i])."' OR";
+								}
+								$criterio_cat = substr($criterio_cat,0,-3);
+								$query_cat = "SELECT * FROM ".$prefix."categorie_new WHERE 1 AND ($criterio_cat) ORDER BY level ASC, position DESC";
+								$risu_cat = $open_connection->connection->query($query_cat);
+								while($arr_cat=$risu_cat->fetch()){
+									$name = $arr_cat['name'];									
+									$link = $arr_cat['link_it'];
+									?>
+									 <a href="<?=$link;?>" title="<?=$name;?> | <?=$nome_del_sito;?>">
+										<div class="catList"><?=$name;?></div>
+									</a>
+									<?
+								}
+								?>
+							</div>
+						</div>
+					</td>
+					<td style="text-align:left">
+						<div style="font-weight:<?if(isset($prezzo_offerta) && $prezzo_offerta!="" && $prezzo_offerta!="0.00"){?>normal; text-decoration: line-through; font-size:0.9em;<?}else{?>bold<?}?>">
+							<?=number_format($prezzo,2);?>&euro;
+						</div>
+						<?if(isset($prezzo_offerta) && $prezzo_offerta!="" && $prezzo_offerta!="0.00"){?>
+							<div><b><?=number_format($prezzo_offerta,2);?>&euro;</b></div>
+						<?}?>
+					</td>
+					<td style="text-align:center; <?if($qty==0){?>background:rgba(255,0,0,0.7); color:#fff; font-weight:bold<?}?>">
+						<?=$qty;?>
+					</td>
+					<td align="center" valign="center">
+						<?
+						$query_plan="SELECT id FROM  ".$prec_db."prodotti_gallery WHERE id_product='$id_campo'";
+						$resu_plan=$open_connection->connection->query($query_plan);
+						$num_plan = $resu_plan->rowCount();
+						?>
+						<div style="width:30px; height:30px; border-radius:15px; bottom:2px; right:2px; text-align:center; background:#000;  cursor:pointer;" onclick="document.getElementById('framePage').src='frame/foto_prodotto.php?id_rife=<?=$id_campo;?>'; $('#mask').fadeIn();">						
+							<div style="color:#fff; padding-top:5px; font-weight:bold;"><?=$num_plan;?></div>
+						</div>
+					</td>
+					<td  align="center" valign="center">
+						<a style="cursor:pointer" onclick="gestisci_vis('<?=$id_campo;?>')">
+							<div style="width:30px; height:30px" id="visibilita_<?=$id_campo;?>">
+								<? if ($vis=='1' || $vis=='4'){?>
+									<i class="fa-solid fa-circle-check fa-2x" style="color:#99D000"></i>
+								<?}else{?>
+									<i class="fa-regular fa-circle fa-2x" style="color:red"></i>
+								<?}?>
+							</div>
+						</a>
+					</td>
+					<td align="center" valign="center">
+						<a style="cursor:pointer" onclick="gestisci_evid('<?=$id_campo;?>')">
+							<div style="width:30px; height:30px" id="evidenza_<?=$id_campo;?>">
+								<? if ($evidenza=='1'){?>
+									<i class="fa-solid fa-circle-check fa-2x" style="color:#99D000"></i>
+								<?}else{?>
+									<i class="fa-regular fa-circle fa-2x" style="color:red"></i>
+								<?}?>
+							</div>
+						</a>
+					</td>
+					<?/*<td style="text-align:center">
+						<a style="cursor:pointer" onclick="gestisci_nov('<?=$id_campo;?>')">
+							<img id="novita_<?=$id_campo;?>" src="<? if ($nov=='1') echo "css/icons/icol32/accept_22.png"; else echo "css/icons/icol32/accept_22_off.png" ?>" alt=""/>
+						</a>
+					</td>*/?>
+					<td align="center" valign="center">
+						<a style="cursor:pointer" onclick="gestisci_off('<?=$id_campo;?>')">
+							<div style="width:30px; height:30px" id="offerta_<?=$id_campo;?>">
+								<? if ($offerta=='1'){?>
+									<i class="fa-solid fa-circle-check fa-2x" style="color:#99D000"></i>
+								<?}else{?>
+									<i class="fa-regular fa-circle fa-2x" style="color:red"></i>
+								<?}?>
+							</div>
+						</a>
+					</td>
+					<td align="center" valign="center">
+						<a style="cursor:pointer" onclick="gestisci_nov('<?=$id_campo;?>')">
+							<div style="width:30px; height:30px" id="novita_<?=$id_campo;?>">
+								<? if ($novita=='1'){?>
+									<i class="fa-solid fa-circle-check fa-2x" style="color:#99D000"></i>
+								<?}else{?>
+									<i class="fa-regular fa-circle fa-2x" style="color:red"></i>
+								<?}?>
+							</div>
+						</a>
+					</td>
+					<td style="width:10%">
+						<span class="btn-group">
+							<?/*<a href="admin.php?cmd=<?=$pagina;?>&id_canc=<? echo $id_campo; ?>&azione=primo<?=$rif;?>&pag_att=<?=$pag_att;?>" class="btn btn-small"><i class="icon-arrow-up-2"></i></a>
+							<a href="admin.php?cmd=<?=$pagina;?>&id_canc=<? echo $id_campo; ?>&azione=sali<?=$rif;?>&pag_att=<?=$pag_att;?>" class="btn btn-small"><i class="icon-arrow-up"></i></a>
+							<a href="admin.php?cmd=<?=$pagina;?>&id_canc=<? echo $id_campo; ?>&azione=scendi<?=$rif;?>&pag_att=<?=$pag_att;?>" class="btn btn-small"><i class="icon-arrow-down"></i></a>
+							<a href="admin.php?cmd=<?=$pagina;?>&id_canc=<? echo $id_campo; ?>&azione=ultimo<?=$rif;?>&pag_att=<?=$pag_att;?>" class="btn btn-small"><i class="icon-arrow-down-2"></i></a>
+							<div class="btn btn-small" style="position:relative; width:15px; height:20px; ">
+								<div style="position:absolute; width:20px; height:20px; top:2px; left:7px; border:solid:#000; background:#fff; z-index:99"></div>
+								<div style="position:absolute; width:20px; height:20px; top:-2px; left:7px; z-index:100">
+									<form action="admin.php" method="GET">
+										<input type="hidden" name="cmd" value="<?=$pagina;?>"/>
+										<input type="hidden" name="id_canc" value="<? echo $id_campo; ?>"/>
+										<input type="hidden" name="azione" value="cambia"/>
+										<input type="hidden" name="pag_att" value="<?=$pag_att;?>"/>
+										<input type="text" name="new_pos" value="<? echo $start+$x+1; ?>" style="width:15px; height:10px; padding:0; margin:0; border:0; text-align:center; background:none"/>
+									</form>
+								</div>
+							</div>*/?>
+							<a href="admin.php?cmd=<?=$pagina;?>_mod&id_rec=<? echo $id_campo; ?><?=$rif;?>&pag_att=<?=$pag_att;?>" class="btn btn-small"><i class="icon-pencil"></i></a>
+							<a OnClick="return confirm('Sei sicuro di voler cancellare questo elemento?');" href="admin.php?cmd=<?=$pagina;?>&azione=cancella&id_canc=<? echo $id_campo; ?><?=$rif;?>&pag_att=<?=$pag_att;?>" class="btn btn-small"><i class="icon-trash"></i></a>
+						</span>
+					</td>
+				</tr>
+			<?
+					}
+				}
+			?>
+			</tbody>
+		</table>	
+		<? include("fissi/multipagina.inc.php"); ?>
+		<a href=""  onClick="return confirm('Cancellare gli elementi selezionati?')" id="cancella_sel" style="display:none;"><div style="padding:5px"><input type="button" value="CANCELLA SELEZIONATI"/></div></a>
+	</div>
+</div>
+<iframe id="hiddenFrame" style="display:none"></iframe>
+<script type="text/javascript">
+  function gestisci_vis(id){
+	var curSrc = $("#visibilita_"+id).html();
+	
+	if (curSrc.includes('99D000')) { 
+		$("#visibilita_"+id).html('<i class="fa-regular fa-circle fa-2x" style="color:red"></i>')
+	}else{
+		$("#visibilita_"+id).html('<i class="fa-solid fa-circle-check fa-2x" style="color:#99D000"></i>')
+	}
+		
+	$("#hiddenFrame").attr("src", "frame/visibileProdotti.php?id_prod="+id);
+  }
+  
+  function gestisci_evid(id){
+	var curSrc = $("#evidenza_"+id).html();
+	
+	if (curSrc.includes('99D000')) { 
+		$("#evidenza_"+id).html('<i class="fa-regular fa-circle fa-2x" style="color:red"></i>')
+	}else{
+		$("#evidenza_"+id).html('<i class="fa-solid fa-circle-check fa-2x" style="color:#99D000"></i>')
+	}
+	$("#hiddenFrame").attr("src", "frame/evidenzaProdotti.php?id_prod="+id);
+  }
+  
+  function gestisci_off(id){
+	var curSrc = $("#offerta_"+id).html();
+	
+	if (curSrc.includes('99D000')) { 
+		$("#offerta_"+id).html('<i class="fa-regular fa-circle fa-2x" style="color:red"></i>')
+	}else{
+		$("#offerta_"+id).html('<i class="fa-solid fa-circle-check fa-2x" style="color:#99D000"></i>')
+	}
+	$("#hiddenFrame").attr("src", "frame/offertaProdotti.php?id_prod="+id);
+  }
+  
+  function gestisci_nov(id){
+	var curSrc = $("#novita_"+id).html();
+	
+	if (curSrc.includes('99D000')) { 
+		$("#novita_"+id).html('<i class="fa-regular fa-circle fa-2x" style="color:red"></i>')
+	}else{
+		$("#novita_"+id).html('<i class="fa-solid fa-circle-check fa-2x" style="color:#99D000"></i>')
+	}
+	
+	$("#hiddenFrame").attr("src", "frame/novitaProdotti.php?id_prod="+id);
+  }
+</script>

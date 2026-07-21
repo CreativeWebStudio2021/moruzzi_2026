@@ -1,0 +1,313 @@
+<?
+$table=$prec_db."ordini";
+$pagina="ordini";
+
+$data_oggi = date("d-m-Y");
+
+if(isset($_GET['stato_ric'])) $stato_ric=$_GET['stato_ric']; else $stato_ric='';
+if(isset($_GET['num_ric'])) $num_ric=$_GET['num_ric']; else $num_ric='';
+if(isset($_GET['cognome_ric'])) $cognome_ric=$_GET['cognome_ric']; else $cognome_ric='';
+if(isset($_GET['email_ric'])) $email_ric=$_GET['email_ric']; else $email_ric='';
+if(isset($_GET['dal_ric'])) $dal_ric=$_GET['dal_ric']; else $dal_ric='';
+if(isset($_GET['al_ric'])) $al_ric=$_GET['al_ric']; else $al_ric='';
+if(isset($_GET['pag_att'])) $pag_att=$_GET['pag_att']; else $pag_att=1;
+
+$rif="";
+if($stato_ric!="") { $rif.="&stato_ric=$stato_ric"; }
+if($num_ric!="") { $rif.="&num_ric=$num_ric"; }
+if($cognome_ric!="") { $rif.="&cognome_ric=$cognome_ric"; }
+if($email_ric!="") { $rif.="&email_ric=$email_ric"; }
+if($dal_ric!="") { $rif.="&dal_ric=$dal_ric"; }
+if($al_ric!="") { $rif.="&al_ric=$al_ric"; }
+$rif.="&pag_att=$pag_att";
+
+if (isset($_POST['stato_mod']) && $_POST['stato_mod']=="1") {
+	if (isset($_POST['note_mod'])) $note_mod = $_POST['note_mod'];
+		else $note_mod = "";
+	
+	$query_mod = "update ".$prec_db."ordini set note='$note_mod' where id='$id_rec'";
+	$risu_mod = $open_connection->connection->query($query_mod);
+}		
+
+if (isset($_POST['data_pag'])) $data_pag = $_POST['data_pag'];
+	else $data_pag = $data_oggi;
+
+if (isset($_POST['stato_pagato']) && $_POST['stato_pagato']=="inviato") {
+	if (isset($_POST['data_pag'])) $data_pagam = $_POST['data_pag'];
+	else $data_pagam = "";
+	
+	$query_stato = "select status from ".$prec_db."ordini where id='$id_rec'";
+	$risu_stato = $open_connection->connection->query($query_stato);
+	list($stato_old) = $risu_stato->fetch();
+	
+	if ($data_pagam!="") {
+		$temp=explode("-",$data_pagam);
+		$data_pagam=$temp[2]."-".$temp[1]."-".$temp[0];
+		$data_pagam .= " 00:00:00";
+		
+		if ($stato_old=="spedito") $query_agg = "update ".$prec_db."ordini set data_pagato='$data_pagam',data_mod='".date('Y-m-d H:i:s')."' where id='$id_rec'";
+		else $query_agg = "update ".$prec_db."ordini set data_pagato='$data_pagam',status='pagato',data_mod='".date('Y-m-d H:i:s')."' where id='$id_rec'";
+		$risu_agg = $open_connection->connection->query($query_agg);
+	}
+}
+
+
+$query_ord = "select * from ".$prec_db."ordini where id='$id_rec' ";
+$risu_ord = $open_connection->connection->query($query_ord);
+$arr_ord = $risu_ord->fetch();
+
+$id_cliente = $arr_ord['id_cliente'];
+$nome_cli = ucwords($arr_ord['nome']);
+$cognome_cli = ucwords($arr_ord['cognome']);
+$stato_ord = $arr_ord['status'];
+$data_pagato = $arr_ord['data_pagato'];
+$pagamento = $arr_ord['pagamento'];
+$spedizione = $arr_ord['spedizione'];
+$totale = $arr_ord['totale'];
+$spese = $arr_ord['spese'];
+$nome_cons = $arr_ord['nome_spe'];
+$cognome_cons = $arr_ord['cognome_spe'];
+$rag_sociale_cons = $arr_ord['azienda_spe'];
+$indirizzo_cons = $arr_ord['indirizzo_spe'];
+$cap_cons = $arr_ord['cap_spe'];
+$citta_cons = $arr_ord['citta_spe'];
+$prov_cons = $arr_ord['prov_spe'];
+$nazione_cons = $arr_ord['paese_spe'];
+$note_cons = $arr_ord['note_spe'];
+$telefono_cons = $arr_ord['telefono_spe'];
+$piva_cons = $arr_ord['piva'];
+$pec_sdu_cons = $arr_ord['pec_sdu'];
+$cod_fiscale_cons = $arr_ord['cod_fiscale'];
+$email_cons = $arr_ord['email'];
+
+$data_ord = $arr_ord['data_ord'];
+if($data_ord != "") {
+	$arr_data_ord = explode(" ",$data_ord);
+	$data_ord = $oggetto_admin->date_to_data($arr_data_ord[0]);
+}
+
+$evaso = "NO";
+if($stato_ord=="pagato" || $stato_ord=="spedito")
+{
+	if($data_pagato != "") {
+		$arr_data = explode(" ",$data_pagato);
+		$temp=explode("-",$arr_data[0]);
+		$data_pagato = $temp[2]."-".$temp[1]."-".$temp[0];
+		
+		$pagato = "il $data_pagato";
+	}
+	else $pagato = "il ( data non disponibile )";
+	
+	if ($stato_ord=="spedito") $evaso = "SI";
+}
+else $pagato = "NO";
+?>
+<div class="mws-panel grid_8">
+	<div style="height:50px;font-size:1.2em;padding-top:10px">
+		<div style="float:left"><b>Dettaglio <?=$pagina;?></b></div>
+		<div style="float:right"><a href="admin.php?cmd=ordini<?=$rif;?>" style="color:#333333"><b>Torna Indietro</b></a></div>
+		<div style="clear:both"></div>
+	</div>
+	
+	<div class="mws-panel-header">
+		<span><i class="fa fa-file-text-o" style="color:#fff"></i> Dati ordine</span>
+	</div>
+	<div class="mws-panel-body no-padding">
+		<div  class="testo11" style="width:100%;">
+			<div style="float:left; width:33%">
+				<div style="padding:20px;">
+					<div  class="testo11"><span class="celeste">N. Ordine:</span> <b><?=$arr_ord['id']?></b></div>
+					<div  class="testo11"><span class="celeste">Del:</span> <b><?=$data_ord?></b></div>
+					<div  class="testo11"><span class="celeste">Cliente:</span> <b><?=$cognome_cli?> <?=$nome_cli?></b></div>
+					<div  class="testo11"><span class="celeste">Stato:</span> <b><?=ucfirst($stato_ord);?></b><br/><br/></div>
+					<div  class="testo11"><span class="celeste">Pagamento scelto:</span> <b><?=ucfirst($pagamento);?></b></div>
+					<div  class="testo11"><span class="celeste">Metodo di spedizione:</span> <b><?=$spedizione?></b></div>
+					<div  class="testo11"><span class="celeste">Spese di spedizione:</span> <b><? echo number_format($spese, 2, ',', '.')." &euro;"; ?></b></div>
+					<div  class="testo11"><span class="celeste">Totale:</span> <b><?=number_format($totale, 2, ',', '.');?> &euro;</b><br/><br/></div>
+					<div  class="testo11" style="margin-top:10px"><span class="celeste">Pagato:</span> <b><?=$pagato?></b></div>
+					<div  class="testo11"><span class="celeste">Evaso:</span> <b><?=$evaso?></b></div>			
+				</div>
+			</div>
+			<div style="float:left; width:32%; margin-top:20px; border:solid 1px #BCBCBC">
+				<div style="padding:20px;">
+					<b>DATI SPEDIZIONE</b><br/>
+					<div style="float:left; width:120px">
+						Nome:
+					</div>
+					<div style="float:left; width:calc (100% - 130px);">
+						<b><? echo ucwords($cognome_cons)." ".ucwords($nome_cons);?></b>
+					</div>
+					<div style="clear:both"></div>
+					
+					<div style="float:left; width:120px;">
+						Indirizzo:
+					</div>
+					<div style="float:left; width:calc(100% - 130px);">
+						<b><?=ucwords($indirizzo_cons)."<br/>".$cap_cons." ".ucwords($citta_cons)." (".ucfirst($prov_cons).") - ".ucfirst($nazione_cons); ?></b>
+					</div>
+					<div style="clear:both"></div>
+					<?if($rag_sociale_cons && $rag_sociale_cons!=""){?>
+						<hr>
+						<div style="float:left; width:120px">
+							Rag. Sociale:
+						</div>
+						<div style="float:left; width:calc (100% - 130px);">
+							<b><?=$rag_sociale_cons;?></b>
+						</div>
+						<div style="clear:both"></div>
+					<?}?>
+					<?if($piva_cons && $piva_cons!=""){?>
+						<div style="float:left; width:120px">
+							P.IVA:
+						</div>
+						<div style="float:left; width:calc (100% - 130px);">
+							<b><?=$piva_cons;?></b>
+						</div>
+						<div style="clear:both"></div>
+					<?}?>
+					<?if($pec_sdu_cons && $pec_sdu_cons!=""){?>
+						<div style="float:left; width:120px">
+							Codice SDI o PEC:
+						</div>
+						<div style="float:left; width:calc (100% - 130px);">
+							<b><?=$pec_sdu_cons;?></b>
+						</div>
+						<div style="clear:both"></div>
+					<?}?>
+					<?if($cod_fiscale_cons && $cod_fiscale_cons!=""){?>
+						<hr>
+						<div style="float:left; width:120px">
+							Cod. Fiscale:
+						</div>
+						<div style="float:left; width:calc (100% - 130px);">
+							<b><?=$cod_fiscale_cons;?></b>
+						</div>
+						<div style="clear:both"></div>
+					<?}?>
+					<hr>
+					<div style="float:left; width:120px">
+						Telefono:
+					</div>
+					<div style="float:left; width:calc (100% - 130px);">
+						<b><?=$telefono_cons;?></b>
+					</div>
+					<div style="clear:both"></div>
+					<div style="float:left; width:120px">
+						Email:
+					</div>
+					<div style="float:left; width:calc (100% - 130px);">
+						<b><?=$email_cons;?></b>
+					</div>
+					<div style="clear:both"></div>
+					<?if($note_cons && $note_cons!=""){?>
+						<hr>
+						<div style="float:left; width:120px;">
+							NOTE:
+						</div>
+						<div style="float:left; width:calc(100% - 130px);">
+							<b><? echo ucfirst($note_cons); ?></b>
+						</div>
+						<div style="clear:both"></div>
+					<?}?>
+					
+				</div>
+			</div>
+			<div style="clear:both; height:20px"></div>
+			
+		</div>
+	</div>
+	
+	<div class="mws-panel-header" style="margin-top:20px;">
+		<span><i class="icon-table"></i> Elenco Prodotti</span>
+	</div>
+	<div class="mws-panel-body no-padding">
+		<table class="mws-datatable-fn mws-table">
+			<thead>
+				<tr>					
+					<th style="width:150px"><i class="fa fa-camera"></i></th>
+					<th style="text-align:left">Cod.</th>			
+					<th style="width:500px; text-align:left">Prodotto</th>			
+					<th style="text-align:left">Quantità</th>		
+					<th style="text-align:left">Peso</th>	
+					<th style="text-align:left">Peso Parz</th>
+					<th style="text-align:left">Prezzo</th>		
+					<th style="text-align:left">Totale parz.</th>	
+				</tr>
+			</thead>
+			<tbody>
+				<?
+				$query_ele = "select * from ".$prec_db."ordini_prod where id_ord='$id_rec'";
+				$risu_ele = $open_connection->connection->query($query_ele);
+				
+				$tot_ordinati = 0;
+
+				while($arr_ele = $risu_ele->fetch())
+				{
+					echo "<tr>";
+
+					$id_campo = $arr_ele['id'];
+					$id_prodotto = $arr_ele['id_prod'];
+					$quantita = $arr_ele['quantita'];
+					$peso = number_format($arr_ele['peso'], 2);
+					$peso_f = number_format($arr_ele['peso_f'], 2);
+					$prezzo = number_format($arr_ele['prezzo'], 2, ',', '.');
+					$prezzo_f = number_format($arr_ele['prezzo_f'],2, ',', '.');
+					
+					$cod_prod = $arr_ele['cod_prod'];
+					$nome_prod = $arr_ele['nome'];
+					$tot_ordinati += $arr_ele['prezzo_f'];
+					
+					/*$prezzo_f = number_format($arr_ele['prezzo_f'], 2);*/
+					?>
+					<td valign="center" align="center">
+						<?
+						$query_foto="SELECT image FROM ".$prec_db."prodotti WHERE entity_id='$id_prodotto'";
+						$resu_foto=$open_connection->connection->query($query_foto);
+						$num_foto=$resu_foto->rowCount();
+						if($num_foto==0){?>
+							<div id="foto_<?=$id_campo;?>"><i class="fa fa-file-image-o fa-2x"></i></div>
+						<?}else{?>
+							<div id="foto_<?=$id_campo;?>" style="position:relative;">
+								<?$risu_foto=$resu_foto->fetch();?>
+								<img src="img_up/prodotti/<?if(is_file("img_up/prodotti/s_".$risu_foto['image'])){echo "s_";}?><?=$risu_foto['image'];?>" alt="" style="width:70px;"/>
+							</div>
+						<?}?>
+					</td>					
+					<td valign="center"><?=$cod_prod;?></td>
+					<td valign="center"><?=$nome_prod;?></td>
+					<td valign="center"><?=$quantita;?></td>
+					<td valign="center"><?=$peso;?> Kg</td>
+					<td valign="center"><?=$peso_f;?> Kg</td>
+					<td valign="center"><?=$prezzo;?> &euro;</td>
+					<td valign="center"><?=$prezzo_f;?> &euro;</td>
+					</tr>
+				<?}?>
+			</tbody>
+		</table>
+	</div>
+	<?if ($stato_ord=="nuovo" || $stato_ord=="annullato" || ($stato_ord=="spedito" && $data_pagato=="")) {?>
+		<div class="mws-panel-header" style="margin-top:20px;">
+			<span><i class="fa fa-eur" style="color:#fff"></i> Registra Pagamento</span>
+		</div>
+		
+		<div class="mws-panel-body no-padding">
+			<form name="pagamento_ins" class="mws-form" action="admin.php?cmd=<?=$pagina;?>-dett&id_rec=<? echo $id_rec; ?><?=$rif;?>" method="post" enctype="multipart/form-data">
+				<!--<div id="mws-validate-error" class="mws-form-message error" style="display:none;"></div>-->
+				<input type="hidden" name="stato_pagato" value="inviato">
+				<div class="mws-form-inline">
+					<div class="mws-form-row">
+						<label class="mws-form-label">Data Pagamento</label>
+						<div class="mws-form-item">
+							<input type="text" name="data_pag" class="mws-datepicker large"  value="<?=$data_pag;?>" readonly="readonly" style="width:20%">
+						</div>
+					</div>
+				</div>
+				<div class="mws-button-row">
+					<input type="submit" value="Inserisci" class="btn btn-danger">
+				</div>
+			</form>
+		</div>
+	<?}?>
+	
+	<div style="width:100%; padding:20px; text-align:Center;"><a href="admin.php?cmd=ordini<?=$rif;?>" style="color:#333333"><b>Torna Indietro</b></a></div>
+</div>

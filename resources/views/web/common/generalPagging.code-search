@@ -1,0 +1,112 @@
+# Query: generalPagging
+# ContextLines: 1
+
+23 risultati - 17 file
+
+resources/views/web/layout.blade.php:
+  63  			}
+  64: 			.generalMargin{
+  65  				margin:var(--generalMargin);
+
+resources/views/web/prodotti_dett.blade.php:
+  671  
+  672: {{-- Prodotti correlati (carousel come in_offerta, tutta larghezza generalMargin) --}}
+  673  @if(isset($relatedProducts) && $relatedProducts->isNotEmpty())
+
+  715  @endpush
+  716: <div class="generalMargin">
+  717  	<section class="product-related-section">
+
+resources/views/web/account/order-detail.blade.php:
+  3  @section('content')
+  4:     <div class="generalMargin" style="margin-top:50px;">
+  5          <div style="font-size:50px; font-style:italic; color:var(--red); line-height:40px; margin-bottom:20px;">
+
+resources/views/web/cart/index.blade.php:
+  4  <section class="cart-section section-big-py-space b-g-light">
+  5:     <div class="generalMargin" style="margin-top:50px;">
+  6  
+
+resources/views/web/catalog/index.blade.php:
+  4  <section class="catalog-section section-big-pt-space b-g-light">
+  5:     <div class="catalog-wrapper generalMargin">
+  6          <div class="catalog-layout">
+
+resources/views/web/checkout/review.blade.php:
+  188  
+  189:     <div class="generalMargin" style="padding-top: 20px;">
+  190          <div class="checkout-steps">
+
+resources/views/web/checkout/shipping.blade.php:
+  83  
+  84:     <div class="generalMargin" style="padding-top: 20px;">
+  85          <div class="checkout-steps">
+
+resources/views/web/checkout/thankyou.blade.php:
+  67  
+  68:     <div class="generalMargin" style="padding-top: 20px;">
+  69          <div class="checkout-steps">
+
+resources/views/web/common/footer.blade.php:
+  20  <div style="width:100%;  background:var(--red); padding-top:30px; padding-bottom:30px;">
+  21: 	<div class="generalMargin" style=" display:flex; justify-content:space-between; color:#fff">
+  22  		<div style="width:25%">
+
+  73  <div style="width:100%;  background:var(--black);">
+  74: 	<div class="generalMargin" style=" margin-top:0px; margin-bottom:0px; padding-top:10px; padding-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+  75  		<a href="https://www.creativewebstudio.it" style="color:#fff" target="_blanck" title="Creative Web Studio - Web Agency Civitavecchia">Creative Web Studio 2026</a>
+
+resources/views/web/common/header.blade.php:
+   94  <div class="header sticky">
+   95: 	<div class="generalMargin header-desktop-wrap">
+   96  		<div class="headerInner">
+
+  390  
+  391: 	/* ========== RESPONSIVE: sotto 1200px già gestito da layout (generalMargin) ========== */
+  392  	/* ========== MOBILE HEADER (max-width 992px) ========== */
+
+  465  	
+  466: 	<div class="generalMargin generalHeader header-desktop">
+  467  		<div class="menu">
+
+  833  	<button type="button" class="search-overlay-close-mobile" id="searchOverlayCloseMobile" aria-label="{{ __('menu.chiudi') }}" style="display:none; position:fixed; top:16px; right:16px; z-index:956; width:40px; height:40px; border-radius:50%; background:var(--red); color:#fff; border:none; cursor:pointer; align-items:center; justify-content:center; font-size:20px; line-height:1;">&times;</button>
+  834: 		<div class="generalMargin search-panel-layout" style="position:relative; display:flex; gap:150px;">
+  835  		<div class="search-panel-left" style="display:flex; flex-direction:column;gap:25px;">
+
+  888  	<div class="boxCategorieMask"></div>
+  889: 	<div class="generalMargin categorie-panel-inner" style="position:relative;">
+  890  		@include('web.common.categorie-content', ['tags' => $tags ?? collect()])
+
+resources/views/web/home/accedi.blade.php:
+  1: <div class="generalMargin" style="display:flex; gap:40px; padding-top:85px; padding-bottom:75px;">
+  2  	<div style="flex:1; display:flex; background:var(--red);">
+
+resources/views/web/home/categorie.blade.php:
+  1  <div style="padding:40px 0px; background:#fff;">
+  2: 	<div id="cat" class="generalMargin">
+  3  		@include('web.common.categorie-content', ['tags' => $tags ?? collect()])
+
+resources/views/web/home/famiglia.blade.php:
+  2  <div style="padding:80px 0px 60px;">
+  3: 	<div class="generalMargin">
+  4  		<div style="position:relative; width:100%;">
+
+resources/views/web/home/in_evidenza.blade.php:
+  1  <div style="padding:20px 0px; background:var(--red);">
+  2: 	<div id="carousel2" class="generalMargin">
+  3  		<div style="font-size:50px; font-style:italic; color:white; line-height:40px; font-family:'Inria Serif'">
+
+resources/views/web/home/in_offerta.blade.php:
+  113  
+  114: <div id="carousel3" class="generalMargin">
+  115  	<div style="position:relative; width:100%; display:flex; justify-content:space-between; gap:60px">
+
+resources/views/web/home/partnership.blade.php:
+   9  
+  10: <div class="generalMargin" style="display:flex;justify-content:space-between; padding-bottom:80px;">
+  11  	<div style="width:28%; display:flex; flex-direction:column; gap:35px;">
+
+resources/views/web/home/ultimi_arrivi.blade.php:
+  160  <div class="afterIntro">
+  161: 	<div id="carousel1" class="generalMargin">
+  162  		<div style="font-size:50px; font-style:italic; color:var(--red); line-height:40px;">

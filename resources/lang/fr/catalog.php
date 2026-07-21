@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'categories' => 'Catégories',
+    'products' => 'Produits',
+    'home' => 'Accueil',
+    'products_from' => 'Produits du',
+    'to' => 'au',
+    'of' => 'sur',
+    'results' => 'résultats',
+    'per_page' => 'Produits par page',
+    'sort_by' => 'Trier par',
+    'date' => 'Date',
+    'price' => 'Prix',
+    'name' => 'Nom du produit',
+    'asc' => 'Croissant',
+    'desc' => 'Décroissant',
+    'load_more' => 'Charger plus',
+    'no_results' => 'Aucun résultat',
+    'add_to_cart' => 'Ajouter au panier',
+    'already_in_cart' => 'Déjà dans le panier',
+    'offer' => 'offre',
+    'view_grid' => 'Vue grille',
+    'view_list' => 'Vue liste',
+    'discover_more' => 'En savoir plus',
+    'sold_out'      => 'SOLD OUT',
+    'related_products' => 'Produits associés',
+    'see_all_results' => 'Voir tous les résultats',
+    'perizie_cta_text' => 'Si vous souhaitez faire <strong>expertiser, cataloguer</strong> et <strong>évaluer</strong> vos <strong>pièces, billets</strong> et <strong>médailles</strong> de collection',
+    'perizie_cta_btn' => 'Visitez le site officiel de l\'expert Umberto Moruzzi',
+    'perizie_cta_btn_title' => 'Visitez le site officiel de l\'expert et érudit numismatique Umberto Moruzzi',
+];
+

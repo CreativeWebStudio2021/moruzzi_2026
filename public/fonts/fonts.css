@@ -1,0 +1,333 @@
+
+/* --------- INRIA SERIF ----------------*/
+
+@font-face {
+    font-family: 'Inria Serif';
+    src: url('/fonts/Inria_Serif/nriaSerif-Bold.woff2') format('woff2'),
+        url('/fonts/Inria_Serif/InriaSerif-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Serif';
+    src: url('/fonts/Inria_Serif/InriaSerif-BoldItalic.woff2') format('woff2'),
+        url('/fonts/Inria_Serif/InriaSerif-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Serif';
+    src: url('/fonts/Inria_Serif/InriaSerif-Italic.woff2') format('woff2'),
+        url('/fonts/Inria_Serif/InriaSerif-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Serif';
+    src: url('/fonts/Inria_Serif/InriaSerif-Bold.woff2') format('woff2'),
+        url('/fonts/Inria_Serif/InriaSerif-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Serif';
+    src: url('/fonts/Inria_Serif/InriaSerif-Italic.woff2') format('woff2'),
+        url('/fonts/Inria_Serif/InriaSerif-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Serif';
+    src: url('/fonts/Inria_Serif/InriaSerif-BoldItalic.woff2') format('woff2'),
+        url('/fonts/Inria_Serif/InriaSerif-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Serif';
+    src: url('/fonts/Inria_Serif/InriaSerif-Light.woff2') format('woff2'),
+        url('/fonts/Inria_Serif/InriaSerif-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Serif';
+    src: url('/fonts/Inria_Serif/InriaSerif-LightItalic.woff2') format('woff2'),
+        url('/fonts/Inria_Serif/InriaSerif-LightItalic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Serif';
+    src: url('/fonts/Inria_Serif/InriaSerif-Regular.woff2') format('woff2'),
+        url('/fonts/Inria_Serif/InriaSerif-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* --------- INRIA SANS ----------------*/
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('/fonts/Inria_Sans/InriaSans-Bold.woff2') format('woff2'),
+        url('/fonts/Inria_Sans/InriaSans-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('/fonts/Inria_Sans/InriaSans-Italic.woff2') format('woff2'),
+        url('/fonts/Inria_Sans/InriaSans-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('/fonts/Inria_Sans/InriaSans-BoldItalic.woff2') format('woff2'),
+        url('/fonts/Inria_Sans/InriaSans-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('/fonts/Inria_Sans/InriaSans-BoldItalic.woff2') format('woff2'),
+        url('/fonts/Inria_Sans/InriaSans-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('/fonts/Inria_Sans/InriaSans-Italic.woff2') format('woff2'),
+        url('/fonts/Inria_Sans/InriaSans-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('/fonts/Inria_Sans/InriaSans-Bold.woff2') format('woff2'),
+        url('/fonts/Inria_Sans/InriaSans-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('/fonts/Inria_Sans/InriaSans-Light.woff2') format('woff2'),
+        url('/fonts/Inria_Sans/InriaSans-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('/fonts/Inria_Sans/InriaSans-LightItalic.woff2') format('woff2'),
+        url('/fonts/Inria_Sans/InriaSans-LightItalic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('/fonts/Inria_Sans/InriaSans-Regular.woff2') format('woff2'),
+        url('/fonts/Inria_Sans/InriaSans-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+
+/* --------- FIRA MONO ----------------*/
+
+@font-face {
+    font-family: 'Fira Mono';
+    src: url('/fonts/Fira_Mono/FiraMono-Bold.woff2') format('woff2'),
+        url('/fonts/Fira_Mono/FiraMono-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Fira Mono';
+    src: url('/fonts/Fira_Mono/FiraMono-Medium.woff2') format('woff2'),
+        url('/fonts/Fira_Mono/FiraMono-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Fira Mono';
+    src: url('/fonts/Fira_Mono/FiraMono-Regular.woff2') format('woff2'),
+        url('/fonts/Fira_Mono/FiraMono-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+/* --------- DM MONO ----------------*/
+
+@font-face {
+    font-family: 'DM Mono';
+    src: url('/fonts/DM_Mono/DMMono-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DM Mono';
+    src: url('/fonts/DM_Mono/DMMono-Italic.woff2') format('woff2');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DM Mono';
+    src: url('/fonts/DM_Mono/DMMono-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DM Mono';
+    src: url('/fonts/DM_Mono/DMMono-MediumItalic.woff2') format('woff2');
+    font-weight: 500;
+    font-style: italic;
+    font-display: swap;
+}
+
+
+@font-face {
+    font-family: 'DM Mono';
+    src: url('/fonts/DM_Mono/DMMono-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DM Mono';
+    src: url('/fonts/DM_Mono/DMMono-LightItalic.woff2') format('woff2');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+
+/* --------- COMMISSIONER ----------------*/
+
+@font-face {
+    font-family: 'Commissioner';
+    src: url('/fonts/Commissioner/Commissioner-Bold.woff2') format('woff2'),
+       url('/fonts/Commissioner/Commissioner-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Commissioner';
+    src:url('/fonts/Commissioner/Commissioner-Black.woff2') format('woff2'),
+       url('/fonts/Commissioner/Commissioner-Black.woff') format('woff');
+    font-weight: 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Commissioner';
+    src:url('/fonts/Commissioner/Commissioner-ExtraBold.woff2') format('woff2'),
+       url('/fonts/Commissioner/Commissioner-ExtraBold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Commissioner';
+    src:url('/fonts/Commissioner/Commissioner-ExtraLight.woff2') format('woff2'),
+       url('/fonts/Commissioner/Commissioner-ExtraLight.woff') format('woff');
+    font-weight: 200;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Commissioner';
+    src:url('/fonts/Commissioner/Commissioner-Light.woff2') format('woff2'),
+       url('/fonts/Commissioner/Commissioner-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Commissioner';
+    src:url('/fonts/Commissioner/Commissioner-Medium.woff2') format('woff2'),
+       url('/fonts/Commissioner/Commissioner-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Commissioner';
+    src:url('/fonts/Commissioner/Commissioner-Regular.woff2') format('woff2'),
+       url('/fonts/Commissioner/Commissioner-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Commissioner';
+    src:url('/fonts/Commissioner/Commissioner-SemiBold.woff2') format('woff2'),
+       url('/fonts/Commissioner/Commissioner-SemiBold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Commissioner';
+    src:url('/fonts/Commissioner/Commissioner-Thin.woff2') format('woff2'),
+       url('/fonts/Commissioner/Commissioner-Thin.woff') format('woff');
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
+}
+

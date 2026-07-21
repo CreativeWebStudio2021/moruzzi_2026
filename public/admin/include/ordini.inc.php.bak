@@ -1,0 +1,657 @@
+<?
+$table=$prec_db."ordini";
+$pagina="ordini";
+
+$criterio="";
+$rif="";
+if(isset($_GET['pag_att'])) $pag_att=$_GET['pag_att']; else $pag_att=1;
+if(isset($_GET['num_ric'])) $num_ric=$_GET['num_ric']; else $num_ric='';
+if(isset($_GET['stato_ric'])) $stato_ric=$_GET['stato_ric']; else $stato_ric='';
+if(isset($_GET['cognome_ric'])) $cognome_ric=$_GET['cognome_ric']; else $cognome_ric='';
+if(isset($_GET['email_ric'])) $email_ric=$_GET['email_ric']; else $email_ric='';
+if(isset($_GET['dal_ric'])) $dal_ric=$_GET['dal_ric']; else $dal_ric='';
+if(isset($_GET['al_ric'])) $al_ric=$_GET['al_ric']; else $al_ric='';
+
+if($stato_ric!="") { 
+	if($stato_ric=="aperti") $criterio.=" AND ( status = 'nuovo' OR status = 'pagato'  OR status='pending' OR status='processing' OR status='holded' OR status='payment_review')"; 
+	if($stato_ric=="evasi") $criterio.=" AND ( status = 'spedito'  OR status='complete' OR status='closed' )"; 
+	if($stato_ric=="annullati") $criterio.=" AND ( status = 'annullato'  OR status='canceled' )"; 
+	if($stato_ric=="cancellati") $criterio.=" AND status = 'cancellato'"; 
+	$rif.="&stato_ric=$stato_ric"; 
+}
+if($num_ric!="") { $criterio.=" AND id='%$num_ric%'"; $rif.="&num_ric=$num_ric"; }
+if($cognome_ric!="") { $criterio.=" AND (nome LIKE '%$cognome_ric%' OR cognome LIKE '%$cognome_ric%' OR azienda LIKE '%$cognome_ric%' )"; $rif.="&cognome_ric=$cognome_ric"; }
+if($email_ric!="") { $criterio.=" AND email LIKE '%$email_ric%'"; $rif.="&email_ric=$email_ric"; }
+if($dal_ric!="") { 
+	$temp=explode("-",$dal_ric);
+	$data_dal=$temp[2]."-".$temp[1]."-".$temp[0];
+	$criterio.=" AND data_ord >= '$data_dal'"; 
+	$rif.="&dal_ric=$dal_ric"; 
+}
+if($al_ric!="") {
+	$temp=explode("-",$al_ric);
+	$data_al=$temp[2]."-".$temp[1]."-".$temp[0];
+	$criterio.=" AND data_ord <= '$data_al : 23:59:59'"; 
+	$rif.="&al_ric=$al_ric"; 
+}
+//$rif.="&pag_att=$pag_att";
+
+if($_SESSION["acl_login"]<300)
+	$criterio.=" AND status <> 'cancellato'";
+
+if($azione=="cancella" && $id_canc!="")
+{	
+	$query_canc_prod = "delete from ".$prec_db."ordini_prod where id_ord='$id_canc'";
+	$risu_canc_prod = $open_connection->connection->query($query_canc_prod);
+	
+	$query_canc = "delete from $table where id='$id_canc'";
+	$risu_canc = $open_connection->connection->query($query_canc);
+	
+?>
+	<script language="javascript">		
+		window.location="admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>";
+	</script>
+<?
+} 
+
+if ($id_canc) {
+	if ($azione=="attivaf") $query_nov = $open_connection->connection->query("update ".$prec_db."ordini set fatturato='1' where id='$id_canc'");
+	if ($azione=="disattivaf") $query_nov = $open_connection->connection->query("update ".$prec_db."ordini set fatturato='0' where id='$id_canc'");
+	
+	/*if($azione=="sali") $oggetto_admin->sali("$table", "$id_canc", "id_rife", "$id_rife") ;
+	if($azione=="scendi") $oggetto_admin->scendi("$table", "$id_canc", "id_rife", "$id_rife") ;
+	if($azione=="primo") $oggetto_admin->primo("$table", "$id_canc", "id_rife", "$id_rife") ;
+	if($azione=="ultimo") $oggetto_admin->ultimo("$table", "$id_canc", "id_rife", "$id_rife") ;
+	if($azione=="cambia") {
+		if(isset($_GET['new_pos'])) $new_pos=$_GET['new_pos']; else $new_pos="";
+		if($new_pos!="") $oggetto_admin->cambia("$table", "$id_canc", "$new_pos", "id_rife", "$id_rife") ;	
+	}
+	
+	if($azione=="sali" || $azione=="scendi" || $azione=="primo" || $azione=="ultimo" || $azione=="cambia"){?>
+		<script type="text/javascript">
+			window.location='admin.php?cmd=<?=$table;?><?=$rif;?>';
+		</script>
+	<?}*/
+}
+
+/*if($azione=="evadi_sel") {	
+	if(isset($_GET['lista'])) $lista=$_GET['lista']; else $lista="";
+	$temp=explode(";",$lista);
+	for($z=0; $z<count($temp)-1; $z++){		
+		$query_evadi = "update ordini set evaso='1' where id='".$temp[$z]."'";
+		mysql_query($query_evadi);	
+	}?>
+		<script type="text/javascript">
+			window.location='admin.php?cmd=<?=$table;?><?=$rif;?>&pag_att=<?=$pag_att;?>';
+		</script>
+	<?	
+}*/
+
+if($azione=="cancella_sel") {
+	
+	$stato_orig = "cancellato";
+	
+	$query_disev = "update ".$prec_db."ordini set status='$stato_orig', data_mod='".date('Y-m-d H:i:s')."' where id='$id_rec'";
+	$open_connection->connection->query($query_disev);	
+	
+	/* ripristino le quantità del prodotto*/
+	$query_prod="SELECT id_prod, quantita FROM ".$prec_db."ordini_prod WHERE id_ord='$id_rec'";
+	$resu_prod=$open_connection->connection->query($query_prod);
+	while($risu_prod=$resu_prod->fetch()){
+		$query_quant="SELECT quantita FROM ".$prec_db."prodotti WHERE id='".$risu_prod['id_prod']."'";
+		$resu_quant=$open_connection->connection->query($query_quant);
+		list($quant)=$resu_quant->fetch();
+		
+		$query_up="UPDATE ".$prec_db."prodotti SET quantita='".($quant + $risu_prod['quantita'])."' WHERE id='".$risu_prod['id_prod']."'";
+		$risu_up=$open_connection->connection->query($query_up);
+	}
+	
+	if(isset($_GET['lista'])) $lista=$_GET['lista']; else $lista="";
+	$temp=explode(";",$lista);
+	for($z=0; $z<count($temp)-1; $z++){		
+		$query_disev = "update ".$prec_db."ordini set status='$stato_orig', data_mod='".date('Y-m-d H:i:s')."' where id='".$temp[$z]."'";
+		$open_connection->connection->query($query_disev);	
+		
+		/* ripristino le quantità del prodotto*/
+		$query_prod="SELECT id_prod, quantita FROM ".$prec_db."ordini_prod WHERE id_ord='".$temp[$z]."'";
+		$resu_prod=$open_connection->connection->query($query_prod);
+		while($risu_prod=$resu_prod->fetch()){
+			$query_quant="SELECT quantita FROM ".$prec_db."prodotti WHERE id='".$risu_prod['id_prod']."'";
+			$resu_quant=$open_connection->connection->query($query_quant);
+			list($quant)=$resu_quant->fetch();
+			
+			$query_up="UPDATE ".$prec_db."prodotti SET quantita='".($quant + $risu_prod['quantita'])."' WHERE id='".$risu_prod['id_prod']."'";
+			$risu_up=$open_connection->connection->query($query_up);
+		}
+	}?>
+		<script type="text/javascript">
+			window.location='admin.php?cmd=<?=$pagina;?><?=$rif;?>';
+		</script>
+	<?	
+}
+
+if($azione=="annulla_sel") {
+	$stato_orig = "annullato";
+	$data_pagato = "";
+	
+	if(isset($_GET['lista'])) $lista=$_GET['lista']; else $lista="";
+	$temp=explode(";",$lista);
+	for($z=0; $z<count($temp)-1; $z++){		
+		$query_disev = "update ".$prec_db."ordini set status='$stato_orig', data_pagato= NULL , data_mod='".date('Y-m-d H:i:s')."' where id='".$temp[$z]."'";
+		$open_connection->connection->query($query_disev);
+	}?>
+		<script type="text/javascript">
+			window.location='admin.php?cmd=<?=$table;?><?=$rif;?>&pag_att=<?=$pag_att;?>';
+		</script>
+	<?	
+}
+
+if($azione=="evadi")
+{
+	$query_ev = "update ".$prec_db."ordini set status='spedito',data_mod='".date('Y-m-d H:i:s')."' where id=$id_rec";
+	$risu_ev = $open_connection->connection->query($query_ev);	
+	
+	$query_cli = "
+		SELECT 
+			c.nome, 
+			c.cognome, 
+			c.rag_sociale, 
+			c.partita_iva, 
+			c.pec_sdu, 
+			c.cod_fiscale, 
+			c.telefono, 
+			c.email, 
+			c.id, 
+			o.nome_spe, 
+			o.cognome_spe, 
+			o.azienda_spe, 
+			o.indirizzo_spe, 
+			o.citta_spe, 
+			o.cap_spe, 
+			o.prov_spe, 
+			o.paese_spe, 
+			o.telefono_spe, 
+			o.email_spe, 
+			o.totale, 
+			o.spese, 
+			o.spedizione, 
+			o.pagamento, 
+			o.data_ord 
+		FROM 
+			".$prefix."clienti_new as c, ".$prefix."ordini as o 
+		WHERE 
+			c.id =o.id_cliente AND o.id ='$id_rec'
+		";
+	//echo $query_cli."<br/>";
+	$risu_cli = $open_connection->connection->query($query_cli);
+	if ($risu_cli) list($nome, $cognome, $rag_sociale, $partita_iva, $pec_sdu, $cod_fiscale, $telefono, $email, $id_cliente, $nome_spe, $cognome_spe, $azienda_spe, $indirizzo_spe, $citta_spe, $cap_spe, $prov_spe, $paese_spe, $telefono_spe, $email_spe, $totale, $spese, $spedizione, $pagamento, $data_ord) = $risu_cli->fetch();
+	
+	$arr_data_ord  = explode(" ",$data_ord);
+	$data_ord = date_to_data($arr_data_ord[0]);
+	
+	$dati_ordine = "
+	<b>N&deg; ordine:</b> $id_rec<br />
+	<b>Ordine effettuato da:</b> $nome $cognome <br />
+	<b>E-mail:</b> $email <br /><br />
+	<b>DATI DI SPEDIZIONE:</b><br /><br />
+	$nome_spe $cognome_spe<br />";
+	
+	$dati_ordine .= "
+	$indirizzo_spe<br />
+	$cap_spe $citta_spe ($prov_spe)<br />
+	$paese_spe<br /><br />
+	<b>Telefono:</b> $telefono_spe <br />";
+	if(isset($cod_fiscale) && $cod_fiscale!="") $dati_ordine .= "<b>Codice Fiscale:</b> $cod_fiscale <br />";
+	if(isset($azienda_spe) && $azienda_spe!="") $dati_ordine .= "<b>Nome Azienda:</b> $azienda_spe <br />";
+	if(isset($partita_iva) && $partita_iva!="") $dati_ordine .= "<b>P. Iva:</b> $partita_iva <br />";
+	if(isset($pec_sdu) && $pec_sdu!="") $dati_ordine .= "<b>PEC o Codice DEstinatario:</b> $pec_sdu <br />";
+	$dati_ordine .= "<br/><br/>";
+	
+	$dati_ordine .= "			
+	<b>DETTAGLI ORDINE:</b><br /><br />";
+	
+	$dati_ordine .= "<table width=\"600\" style=\"font-size:11px\"><tr><td width=\"80px\"><b>CODICE ART.</b></td> <td width=\"220px\"><b>DESCRIZ.</b></td> <td width=\"100px\"><b>QUANTITA'</b></td> <td width=\"100px\"><b>PREZZO</b></td> <td width=\"100px\"><b>SUBTOTALE</b></td>";			
+	$dati_ordine .= "</tr>";
+	$dati_ordine .="<tr><td colspan=\"6\" style=\"height:5px\">&nbsp;</td></tr>";
+	
+	$tot_parziale = 0;
+	$tot_peso = 0;
+	$risu_pro = $open_connection->connection->query("select * from ".$prefix."ordini_prod where id_ord='$id_rec' ");
+	$num_pro = $risu_pro->rowCount();
+	for ($p=0; $p<$num_pro; $p++) {
+		$arr_dati = $risu_pro->fetch();
+		$nomep = $arr_dati['nome'];
+		$cod_prod = $arr_dati['cod_prod'];
+		$prezzo_uni = $arr_dati['prezzo'];
+		$prezzo_parz = $arr_dati['prezzo_f'];
+		$peso_uni = $arr_dati['peso'];
+		$peso_parz = $arr_dati['peso_f'];
+		$pezzi = $arr_dati['quantita'];
+																																															
+		$tot_parziale += $prezzo_parz;
+		$tot_peso += $peso_parz;
+		
+		$dati_ordine .=" <tr><td>$cod_prod</td> <td>$nomep<br /></td> <td align=center >$pezzi</td> <td align=center>".number_format($prezzo_uni, 2, ',', '.')." &euro; </td> <td align=center>".number_format($prezzo_parz, 2, ',', '.')." &euro; </td>";
+		$dati_ordine .= "</tr>";
+		$dati_ordine .="<tr><td colspan=\"6\" style=\"height:5px\">&nbsp;</td></tr>";
+		$dati_ordine .="<tr><td colspan=\"6\" style=\"height:5px;border-top:1px solid #000\">&nbsp;</td></tr>";
+		
+		$query_p="SELECT qty FROM ".$prefix."prodotti WHERE entity_id='".$arr_dati['id_prod']."'";
+		//echo $query_p."<br/>";
+		$risu_p = $open_connection->connection->query($query_p);
+		list($qty_p) = $risu_p->fetch();
+		$new_qty = $qty_p - $pezzi;
+		if($new_qty<0) $new_qty=0;
+		$query_up="UPDATE ".$prefix."prodotti SET qty='".$new_qty."' WHERE entity_id='".$arr_dati['id_prod']."'";
+		//echo $query_up."<br/>";
+		$risu_up = $open_connection->connection->query($query_up);
+	}
+	
+	$dati_ordine .= "</table><br />";
+	$dati_ordine .= "<b>Totale parziale:</b> ".number_format($tot_parziale, 2, ',', '.')." &euro;<br />";
+	$dati_ordine .= "<b>Peso:</b> ".($tot_peso)." Kg<br />";
+	$dati_ordine .= "<b>Spese di spedizione:</b> ".number_format($spese, 2, ',', '.')." &euro;<br />";
+	
+	$dati_ordine .= "<b>Importo totale ordine:</b> ".number_format($tot_parziale+$spese, 2, ',', '.')." &euro;<br /><br />";
+	
+	$dati_ordine .= "<b>Metodo di spedizione:</b> $spedizione<br /><br />";
+	$dati_ordine .= "<b>Metodo di pagamento:</b> $pagamento<br /><br />";
+	if(isset($note) && $note!="") $dati_ordine .= "<b>Note:</b> $note ";
+	$dati_ordine .= "<br/><br/>";
+	
+	include("fissi/mail_evadi.inc.php");
+}
+
+if($azione=="disevadi")
+{
+	$stato_orig = "nuovo";
+	
+	$data_pagato = "";
+	$query_pagato = "select data_pagato from ".$prefix."ordini where id='$id_rec'";
+	$risu_pagato = $open_connection->connection->query($query_pagato);
+	if ($risu_pagato) list($data_pagato) = $risu_pagato->fetch();
+	
+	if ($data_pagato!="") $stato_orig = "pagato";
+	
+	$query_disev = "update ".$prefix."ordini set status='$stato_orig',data_mod='".date('Y-m-d H:i:s')."' where id='$id_rec'";
+	$open_connection->connection->query($query_disev);	
+	
+	/* ripristino le quantità del prodotto */
+	$query_prod="SELECT id_prod, quantita FROM ".$prefix."ordini_prod WHERE id_ord='$id_rec'";
+	$resu_prod=$open_connection->connection->query($query_prod);
+	while($risu_prod=$resu_prod->fetch()){
+		$query_quant="SELECT qty FROM ".$prefix."prodotti WHERE entity_id='".$risu_prod['id_prod']."'";
+		$resu_quant=$open_connection->connection->query($query_quant);
+		list($quant)=$resu_quant->fetch();
+		
+		$query_up="UPDATE ".$prefix."prodotti SET qty='".($quant + $risu_prod['quantita'])."' WHERE entity_id='".$risu_prod['id_prod']."'";
+		$risu_up=$open_connection->connection->query($query_up);
+	}
+}
+
+if($azione=="disannulla")
+{
+	$stato_orig = "nuovo";
+	
+	$data_pagato = "";
+	$query_pagato = "select data_pagato from ".$prefix."ordini where id='$id_rec'";
+	$risu_pagato = $open_connection->connection->query($query_pagato);
+	if ($risu_pagato) list($data_pagato) = $risu_pagato->fetch();
+	
+	if ($data_pagato!="") $stato_orig = "pagato";
+	
+	$query_disev = "update ".$prefix."ordini set status='$stato_orig',data_mod='".date('Y-m-d H:i:s')."' where id='$id_rec'";
+	$open_connection->connection->query($query_disev);	
+}
+
+if($azione=="annulla")
+{
+	$stato_orig = "annullato";
+	
+	$data_pagato = "";
+	
+	$query_disev = "update ".$prefix."ordini set status='$stato_orig',data_pagato= NULL,data_mod='".date('Y-m-d H:i:s')."' where id='$id_rec'";
+	/*echo $query_disev;*/
+	$open_connection->connection->query($query_disev);	
+}
+
+if($azione=="canc")
+{
+	$stato_orig = "cancellato";
+	
+	$query_disev = "update ".$prefix."ordini set status='$stato_orig', data_mod='".date('Y-m-d H:i:s')."' where id='$id_rec'";
+	$open_connection->connection->query($query_disev);	
+	
+	/* ripristino le quantità del prodotto */
+	$query_prod="SELECT id_prod, quantita FROM ".$prefix."ordini_prod WHERE id_ord='$id_rec'";
+	$resu_prod=$open_connection->connection->query($query_prod);
+	while($risu_prod=$resu_prod->fetch()){
+		$query_quant="SELECT quantita FROM ".$prefix."prodotti WHERE entity_id='".$risu_prod['id_prod']."'";
+		$resu_quant=$open_connection->connection->query($query_quant);
+		list($quant)=$resu_quant->fetch();
+		
+		$query_up="UPDATE ".$prefix."prodotti SET quantita='".($quant + $risu_prod['quantita'])."' WHERE entity_id='".$risu_prod['id_prod']."'";
+		$risu_up=$open_connection->connection->query($query_up);
+	}
+}
+
+?>
+<script type="text/javascript">
+	var lista_ind=new Array();
+	var lista_del="";
+	var lista_tutti="";
+	function aggiungi_lista(id_check, id_campo){
+		if(document.getElementById('check_'+id_check).checked) {
+			lista_del+=id_campo+";";
+		} else {
+			lista_del = lista_del.replace(id_campo+";", "");
+		}
+		if(lista_del!=""){
+			document.getElementById('cancella_sel').style.display="block";
+			document.getElementById('cancella_sel').href='admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>&azione=cancella_sel&lista='+lista_del;
+			
+			document.getElementById('annulla_sel').style.display="block";
+			document.getElementById('annulla_sel').href='admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>&azione=annulla_sel&lista='+lista_del;
+		}else{
+			document.getElementById('cancella_sel').style.display="none";
+			document.getElementById('annulla_sel').style.display="none";
+		}
+	}
+	
+	function aggiugni_tutti(){
+		start = document.getElementById('start').innerHTML;
+		end = document.getElementById('end').innerHTML;
+		total = document.getElementById('total').innerHTML;
+
+		if(document.getElementById('check_tutti').checked){
+			for(i=start-1; i<end; i++){
+				lista_tutti+=lista_ind[i]+";";
+			}
+			for(i=start; i<=end; i++){
+				document.getElementById('check_'+i).checked=true;
+			}
+			document.getElementById('cancella_sel').style.display="block";
+			document.getElementById('cancella_sel').href='admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>&azione=cancella_sel&lista='+lista_tutti;
+			document.getElementById('annulla_sel').style.display="block";
+			document.getElementById('annulla_sel').href='admin.php?cmd=<?=$pagina;?><?=$rif;?>&pag_att=<?=$pag_att;?>&azione=annulla_sel&lista='+lista_tutti;
+		}else{
+			lista_tutti="";
+			for(i=start; i<=total; i++){
+				document.getElementById('check_'+i).checked=false;
+			}
+			document.getElementById('cancella_sel').style.display="none";
+			document.getElementById('annulla_sel').style.display="none";
+		}	
+	}
+</script>
+<div class="mws-panel grid_8">
+	<div style="height:50px;font-size:1.2em;padding-top:10px"><b><?=ucfirst($pagina)." ".$stato_ric;?></b></div>
+	
+	<div id="start" style="display:none"></div>
+	<div id="end" style="display:none"></div>
+	<div id="total" style="display:none"></div>
+	
+	<iframe src="" style="display:none" id="frame_action"></iframe>
+	<iframe src="" style="display:none" id="frame_action2"></iframe>
+	
+	<script type="text/javascript">
+		var open=0;
+		function apri_ricerca(){
+			if(open==0){
+				open=1;
+				$("#searchPanel").animate({height:"260px"});
+				document.getElementById('searchHeader').innerHTML='<span><i class="fa fa-search-minus" style="color:#fff"></i> Ricerca</span>';
+			} else {
+				open=0;
+				$("#searchPanel").animate({height:"0px"});
+				document.getElementById('searchHeader').innerHTML='<span><i class="fa fa-search-plus" style="color:#fff"></i> Ricerca</span>';
+			}
+		}
+	</script>
+	
+	<div class="mws-panel-header" style="cursor:pointer;" onclick="apri_ricerca();" id="searchHeader">
+		<span><i class="fa fa-search-plus" style="color:#fff"></i> Ricerca</span>
+	</div>
+	<div class="mws-panel-body no-padding" style="height:0px; overflow:hidden" id="searchPanel">
+		<form name="ricerca" class="mws-form" action="admin.php" method="GET" enctype="multipart/form-data">
+			<input type="hidden" name="ric_stato" value="inviato">
+			<input type="hidden" name="cmd" value="<?=$pagina;?>">
+			
+			<div class="mws-form-inline">
+				
+				<div class="mws-form-row">
+					<div style="float:left; width:15%;">
+						<label class="mws-form-label">Stato Ordine</label>						
+					</div>
+					<div style="float:left; width:35%;">
+						<select name="stato_ric" class="small" style="width:90%">
+							<option value="">Tutti</option>		
+							<option value="aperti" <?if($stato_ric=="aperti"){?>selected="selected"<?}?>>Ordini Aperti</option>		
+							<option value="evasi" <?if($stato_ric=="evasi"){?>selected="selected"<?}?>>Ordini Evasi</option>		
+							<option value="annullati" <?if($stato_ric=="annullati"){?>selected="selected"<?}?>>Ordini Annullati</option>
+							<?if($_SESSION["acl_login"]>200){?>
+								<option value="cancellati" <?if($stato_ric=="cancellati"){?>selected="selected"<?}?>>Ordini Cancellati (solo Admin)</option>	
+							<?}?>
+						</select>
+					</div>
+					
+					<div style="float:left; width:15%;">
+						<label class="mws-form-label">Cod. Ordine</label>						
+					</div>
+					<div style="float:left; width:35%;">
+						<input type="text" name="num_ric" value="<?=$num_ric;?>"  style="width:20%"/>
+					</div>
+					<div style="clear:both;"></div>
+				</div>				
+				
+				<div class="mws-form-row">
+					<div style="float:left; width:15%;">
+						<label class="mws-form-label">Dal</label>						
+					</div>
+					<div style="float:left; width:35%;">
+						<input type="text" name="dal_ric" class="mws-datepicker large"  value="<?=$dal_ric;?>" readonly="readonly" style="width:90%">
+					</div>
+					<div style="float:left; width:15%;">
+						<label class="mws-form-label">Al</label>						
+					</div>
+					<div style="float:left; width:35%;">
+						<input type="text" name="al_ric" class="mws-datepicker large"  value="<?=$al_ric;?>" readonly="readonly" style="width:90%">
+					</div>
+					<div style="clear:both;"></div>
+				</div>		
+				
+				<div class="mws-form-row">
+					<div style="float:left; width:15%;">
+						<label class="mws-form-label">Cliente</label>						
+					</div>
+					<div style="float:left; width:35%;">
+						<input type="text" name="cognome_ric" value="<?=$cognome_ric;?>"  style="width:90%"/>
+					</div>
+					<div style="float:left; width:15%;">
+						<label class="mws-form-label">Email</label>						
+					</div>
+					<div style="float:left; width:35%;">
+						<input type="text" name="email_ric" value="<?=$email_ric;?>"  style="width:90%"/>
+					</div>
+					<div style="clear:both;"></div>
+				</div>
+				
+			</div>
+			<div class="mws-button-row">
+				<input type="submit" value="Cerca" class="btn btn-danger">
+				<input type="button" value="Annulla" class="btn" onclick="window.location='admin.php?cmd=<?=$pagina;?>'">
+			</div>
+		</form>
+	</div>
+	<div style="height:30px;width:100%;text-align:right; margin-top:15px"></div>
+	<?
+	$query_ele = "SELECT * FROM $table WHERE 1 $criterio ORDER BY data_ord desc";			
+	/*echo $query_ele;*/
+	$risu_ele = $open_connection->connection->query($query_ele);
+		
+	$num_ele = 0;
+	if($risu_ele){
+		$num_ele = $risu_ele->rowCount();	
+		$num_ord=0;
+		$tot_ord=0;
+		while($risu_tot=$risu_ele->fetch()){
+			$totale = $risu_tot['totale'];
+			$tot_ord=$tot_ord + $totale;
+		}
+	}
+	?>
+	<?if($stato_ric=="aperti" || $stato_ric=="evasi"){?>
+		<div style="float:left;" id="num_ord"><b>Numero ordini</b>: <?=$num_ele;?></div>
+		<!--<div style="float:left;width:50%;text-align:right;height:30px"><a style="color:#000" href="admin.php?cmd=<?=$table;?><?=$rif;?>&pag_att=<?=$pag_att;?>&azione=scarica_ordini">Scarica il file degli ordini</a></div>-->
+		<div style="float:left;margin-left:20px;" id="tot_ord"><b>Totale</b>: <?=number_format($tot_ord, 2, ',', '.');?></div>
+		<div style="clear:both"></div>
+	<?}?>
+	
+	<div class="mws-panel-header" style="position:relative;">
+		<span><i class="icon-table"></i> Elenco <?=$pagina;?></span>
+		<div style="position:absolute; top:13px; right:20px; z-index:11">
+			
+		</div>
+	</div>
+	<div class="mws-panel-body no-padding">
+		<table class="mws-datatable-fn mws-table">
+			<thead>
+				<tr>
+					<th style="width:20px"><input type="checkbox" id="check_tutti" onclick="aggiugni_tutti()"/></th>
+					<th style="width:20px"></th>
+					<th style="text-align:left;width:20px">Cod.</th>			
+					<th style="width:150px">Data</th>
+					<th style="min-width:30px">Cliente</th>
+					<th style="width:70px">Totale</th>
+					<th style="width:50px">Stato</th>
+					<th style="width:70px">Pagato il</th>
+					<!--<th style="min-width:30px">Fatturato</th>-->
+					<th style="text-align:left;">Azioni</th>
+				</tr>
+			</thead>
+			<tbody>
+			<?			
+				$rec_pag=20;
+				$start=0;
+				$pag_tot=0;
+				
+				if($num_ele>0)
+				{				
+					$rec_pag=20;					
+					$pag_tot=ceil($num_ele/$rec_pag);					
+					$start=($pag_att-1)*$rec_pag;
+					$query_ele = "SELECT * FROM $table WHERE 1 $criterio ORDER BY data_ord DESC LIMIT $start,$rec_pag";
+					$risu_ele = $open_connection->connection->query($query_ele);
+					$num_item=$risu_ele->rowCount();	
+					for($x=0;$x<$num_item;$x++)
+					{						
+						$arr_ele = $risu_ele->fetch();
+						$temp=explode(" ",$arr_ele['data_ord']);
+						$temp2=explode("-",$temp[0]);
+						$data_ord = $temp2[2]."-".$temp2[1]."-".$temp2[0];
+						$nome = $arr_ele['nome'];
+						$cognome = $arr_ele['cognome'];
+						$rag_sociale = ucfirst($arr_ele['azienda']);
+						$totale = $arr_ele['totale'];
+						$spese = $arr_ele['spese'];
+						$status = $arr_ele['status'];
+						/*$fatturato = $arr_ele['fatturato'];*/
+						$pagamento = $arr_ele['pagamento'];
+						if($arr_ele['data_pagato'] && $arr_ele['data_pagato']!=""){
+							$temp=explode(" ",$arr_ele['data_pagato']);
+							$temp2=explode("-",$temp[0]);
+							$data_pagato = $temp2[2]."-".$temp2[1]."-".$temp2[0];
+						}else $data_pagato = "";
+						$id_campo = $arr_ele['id'];
+						
+						$str_nome = "";
+						if ($nome!="") {
+							$str_nome = ucwords($nome)." ".ucwords($cognome);
+							if ($rag_sociale!="" && $rag_sociale!=" ")  $str_nome .= "<br /><i>($rag_sociale)</i>";
+						} else $str_nome = ucwords($rag_sociale);
+						
+						?>
+						<script type="text/javascript">
+							lista_ind[<?=$x;?>]="<?=$id_campo;?>";
+						</script>
+						<tr class="riga_<?if($x % 2){?>pari<?}else{?>dispari<?}?>">
+							<td align="center" valign="center">
+								<input type="checkbox" id="check_<?=$x+1;?>" onclick="aggiungi_lista('<?=$x+1;?>','<?=$id_campo;?>')"/>
+							</td>
+							<td align="center" valign="center"><? echo $start+$x+1; ?></td>
+							<td valign="center" style="line-height:14px">
+								<b><?echo $id_campo;?></b>
+							</td>
+							
+							<td  align="center" valign="center" id="vis_<?=$id_campo;?>">
+								<?echo $data_ord;?>
+							</td>
+							
+							<td  align="left" valign="center" id="vis_<?=$id_campo;?>">
+								<a href="admin.php?cmd=clienti_mod&id_rec=<?=$arr_ele['id_cliente'];?>" style="text-decoration:underline; color:#333333"><?echo $str_nome;?></a>
+							</td>
+							
+							<td  align="right" valign="center" id="vis_ing_<?=$id_campo;?>">
+								<?echo number_format($totale, 2, ',', '.');?> &euro;
+							</td>
+							
+							<td  align="center" valign="center" id="vis_ing_<?=$id_campo;?>" style="<?if($status=="annullato" || $status=="cancellato"){?>color:red;<?}elseif($status=="pagato" || $status=="spedito"){?>color:green;<?}?> <?if($status=="cancellato" || $status=="spedito"){?>font-weight:bold;<?}?>">
+								<?echo $status;?>
+							</td>
+							
+							<td  align="center" valign="center" id="vis_ing_<?=$id_campo;?>">
+								<?echo $data_pagato;?>
+							</td>	
+
+							<!--<td  align="center" valign="center">
+								<?
+									if ($fatturato==0) echo "<a href=\"admin.php?cmd=ordini&azione=attivaf&id_canc=$id_campo$rif&pag_att=$pag_att\"><img src=\"css/icons/icol32/accept_22_off.png\" alt=\"Segna come fatturato\"/></a>";
+										else echo "<a href=\"admin.php?cmd=ordini&azione=disattivaf&id_canc=$id_campo$rif&pag_att=$pag_att\"><img src=\"css/icons/icol32/accept_22.png\" alt=\"Segna come non fatturato\"/></a>";
+								?>
+							</td>-->	
+							
+							<td style="width:10%" valign="center">
+								<span class="btn-group">
+									<a href="admin.php?cmd=<?=$pagina;?>-dett&id_rec=<? echo $id_campo; ?><?=$rif;?>" class="btn btn-small"><i class="fa fa-search"></i></a>
+									<?if($status!='cancellato'){?>
+										<?if($status!='spedito' && $status!='annullato'){
+											if ($status=="pagato"){?>
+												<a OnClick="return confirm('Sei sicuro di voler evedere questo ordine?');" href="admin.php?cmd=ordini&azione=evadi&id_rec=<? echo $id_campo; ?><?=$rif;?>" class="btn btn-small" title="Evadi"><i class="fa fa-paper-plane"></i></a>
+											<?}else{?>
+												<a href="" style="pointer-events: none; cursor: default;" class="btn btn-small">&nbsp;&nbsp;&nbsp;</a>
+											<?}?>
+										<?}elseif($status=='spedito'){?>									
+											<a  OnClick="return confirm('Sei sicuro di voler ripristinare questo ordine?');"href="admin.php?cmd=ordini&azione=disevadi&id_rec=<? echo $id_campo; ?><?=$rif;?>" class="btn btn-small" title="Riporta tra gli ordini aperti"><i class="fa fa-refresh"></i></a>
+										<?}else{?>
+											<a href="" style="pointer-events: none; cursor: default;" class="btn btn-small">&nbsp;&nbsp;&nbsp;</a>
+										<?}?>
+										<?if($status!='annullato' && $status!='canceled'){?>
+											<a href="admin.php?cmd=<?=$pagina;?>&azione=annulla&id_rec=<? echo $id_campo; ?><?=$rif;?>" class="btn btn-small" title="Annulla" onclick="return confirm('L\'ordine verrà spostato nella sezione \'Ordini Annullati\' e verranno persi eventuali riferimenti a pagamenti effettuati. Confermi l\'annullamento?');"><i class="icon-trash"></i></a>
+										<?}else{?>
+											<a  OnClick="return confirm('Sei sicuro di voler ripristinare questo ordine?');"href="admin.php?cmd=ordini&azione=disannulla&id_rec=<? echo $id_campo; ?><?=$rif;?>" class="btn btn-small" title="Riporta tra gli ordini aperti"><i class="fa fa-refresh"></i></a>
+										<?}?>
+										<?/*<a href="admin.php?cmd=<?=$pagina;?>&azione=canc&id_rec=<? echo $id_campo; ?><?=$rif;?>" class="btn btn-small" title="Cancella" onclick="return confirm('L\'ordine verrà definitivamente cancellato e le quantità di magazzino dei prodotti verranno ripristinate. Confermi la cancellazione?');"><i class="icon-trash"></i></a>*/?>
+									<?}else{?>
+										<a href="" style="pointer-events: none; cursor: default;" class="btn btn-small">&nbsp;&nbsp;&nbsp;</a>
+										<a href="" style="pointer-events: none; cursor: default;" class="btn btn-small">&nbsp;&nbsp;&nbsp;</a>
+										<a href="" style="pointer-events: none; cursor: default;" class="btn btn-small">&nbsp;&nbsp;&nbsp;</a>
+									<?}?>
+								</span>
+							</td>
+						</tr>
+						<?/*$num_ord++; $tot_ord=$tot_ord + $totale;*/
+					}
+				}?>
+				<?/*if($stato_ric=="aperti" || $stato_ric=="evasi"){?>
+					<script type="text/javascript">
+						document.getElementById('num_ord').innerHTML='<b>Numero ordini</b>: <?=$num_ord;?>';
+						document.getElementById('tot_ord').innerHTML='<b>Totale</b>: <?= number_format($tot_ord, 2, ',', '.');?> &euro;';
+					</script>
+				<?}*/?>
+			</tbody>
+		</table>		
+		<?include("fissi/multipagina.inc.php");?>
+		<a href=""  onClick="return confirm('Gli ordini verranno spostati nella sezione \'Ordini Annullati\' e verranno persi eventuali riferimenti a pagamenti effettuati. Confermi l\'annullamento?')" id="annulla_sel" style="display:none;"><div style="padding:5px"><input type="button" value="ANNULLA SELEZIONATI"/></div></a>
+		<a href=""  onClick="return confirm('Gli ordini verranno definitivamente cancellati e le quantità di magazzino dei prodotti verranno ripristinate. Confermi la cancellazione?')" id="cancella_sel" style="display:none;"><div style="padding:5px"><input type="button" value="CANCELLA SELEZIONATI"/></div></a>
+	</div>
+</div>

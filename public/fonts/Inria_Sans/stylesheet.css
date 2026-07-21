@@ -1,0 +1,81 @@
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('InriaSans-Bold.woff2') format('woff2'),
+        url('InriaSans-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('InriaSans-Italic.woff2') format('woff2'),
+        url('InriaSans-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('InriaSans-BoldItalic.woff2') format('woff2'),
+        url('InriaSans-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('InriaSans-BoldItalic.woff2') format('woff2'),
+        url('InriaSans-BoldItalic.woff') format('woff');
+    font-weight: bold;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('InriaSans-Italic.woff2') format('woff2'),
+        url('InriaSans-Italic.woff') format('woff');
+    font-weight: normal;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('InriaSans-Bold.woff2') format('woff2'),
+        url('InriaSans-Bold.woff') format('woff');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('InriaSans-Light.woff2') format('woff2'),
+        url('InriaSans-Light.woff') format('woff');
+    font-weight: 300;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('InriaSans-LightItalic.woff2') format('woff2'),
+        url('InriaSans-LightItalic.woff') format('woff');
+    font-weight: 300;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Inria Sans';
+    src: url('InriaSans-Regular.woff2') format('woff2'),
+        url('InriaSans-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+

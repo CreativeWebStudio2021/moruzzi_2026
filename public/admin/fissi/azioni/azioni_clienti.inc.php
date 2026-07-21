@@ -1,0 +1,5 @@
+<a href="admin.php?cmd=<?php echo $pagina;?>_mod&id_rec=<?php  echo $id_campo; ?><?php echo $rif;?>&pag_att=<?php echo $pag_att;?>" class="btn btn-small"><i class="icon-pencil"></i></a>
+<a OnClick="return confirm('Sei sicuro di voler cancellare questo elemento?');" href="admin.php?cmd=<?php echo $pagina;?>&azione=cancella&id_canc=<?php  echo $id_campo; ?><?php echo $rif;?>&pag_att=<?php echo $pag_att;?>" class="btn btn-small"><i class="icon-trash"></i></a>
+
+<a class="btn btn-small" target="_blank" href="admin.php?cmd=clienti&azione=login_as&id_canc=<?php echo $id_campo;?>" title="Accedi come <?php echo $cognome." ".$nome;?> su Regaliebomboniere"><b>RB</b></a>
+<a class="btn btn-small" target="_blank" href="<?php echo $http;?>://<?php echo $ind_sito2;?>/admin/admin.php?cmd=clienti&azione=login_as&id_canc=<?php echo $id_campo;?>" title="Accedi come <?php echo $cognome." ".$nome;?> su Dolciricordibomboniere"><b>DR</b></a>
