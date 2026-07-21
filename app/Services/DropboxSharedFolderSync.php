@@ -26,6 +26,7 @@ class DropboxSharedFolderSync
         private readonly array $allowedExtensions,
         private readonly bool $preservePaths,
         private readonly string $stateFile,
+        private readonly ?string $imagesSubdirectory = null,
     ) {}
 
     /**
@@ -232,6 +233,16 @@ class DropboxSharedFolderSync
                 .'Esegui: chown admin:www-data public/h && chmod 2775 public/h'
             );
         }
+
+        if ($this->imagesSubdirectory) {
+            $imagesPath = rtrim($this->targetPath, '/').'/'.$this->imagesSubdirectory;
+
+            if (! is_dir($imagesPath)) {
+                if (! mkdir($imagesPath, 02775, true) && ! is_dir($imagesPath)) {
+                    throw new RuntimeException("Impossibile creare la directory: {$imagesPath}");
+                }
+            }
+        }
     }
 
     private function prepareLocalFile(string $localPath): void
@@ -333,7 +344,20 @@ class DropboxSharedFolderSync
             return rtrim($this->targetPath, '/').'/'.ltrim($relativePath, '/');
         }
 
-        return rtrim($this->targetPath, '/').'/'.basename($relativePath);
+        $filename = basename($relativePath);
+
+        if ($this->imagesSubdirectory && $this->isImageFile($filename)) {
+            return rtrim($this->targetPath, '/').'/'.$this->imagesSubdirectory.'/'.$filename;
+        }
+
+        return rtrim($this->targetPath, '/').'/'.$filename;
+    }
+
+    private function isImageFile(string $filename): bool
+    {
+        $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+
+        return in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico'], true);
     }
 
     /**

@@ -350,10 +350,10 @@ else
 						<input type="text" class="small" name="url_key" value="<?php  echo $url_key; ?>" />
 						<small>Caratteri consentiti  a-z, 0-9, - _ !</small>
 					</div>
-				</div>						
+				</div>
 				<input type="hidden" name="correlati" id="correlati" value="<?php echo $n_correlati;?>"/>
 				<div style="margin-top:20px">
-					<?php include("fissi/prodotti_correlati.inc.php");?>
+					<?php include __DIR__.'/../fissi/prodotti_correlati.inc.php'; ?>
 				</div>
 				
 				<br/><br/>

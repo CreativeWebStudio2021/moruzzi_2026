@@ -26,6 +26,11 @@ return [
     'allowed_extensions' => ['html', 'jpg', 'jpeg'],
 
     /*
+    | Sottocartella di public/h dove salvare le immagini (html restano in public/h).
+    */
+    'images_subdirectory' => 'img',
+
+    /*
     | Se true, mantiene le sottocartelle del link Dropbox sotto public/h.
     | Se false, salva tutti i file nella root di public/h (comportamento attuale).
     */

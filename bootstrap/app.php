@@ -42,5 +42,21 @@ return Application::configure(basePath: dirname(__DIR__))
 		]);
 	})
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+            $script = $_SERVER['SCRIPT_NAME'] ?? '';
+            $uri = $_SERVER['REQUEST_URI'] ?? $request->getRequestUri();
+
+            if (str_contains($script, '/admin/') || str_contains($uri, '/admin/')) {
+                return response(
+                    '<div style="font-family:Arial,sans-serif;padding:20px;max-width:900px;margin:20px auto;border:1px solid #c00;background:#fff5f5;">'
+                    .'<h2 style="margin:0 0 12px;color:#900;">Errore backoffice</h2>'
+                    .'<p style="margin:0;">'.htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8').'</p>'
+                    .'</div>',
+                    500,
+                    ['Content-Type' => 'text/html; charset=UTF-8']
+                );
+            }
+
+            return null;
+        });
     })->create();

@@ -62,18 +62,27 @@ class AppServiceProvider extends ServiceProvider
                 ->with('metaImage', $meta['image'] ?? '');
         });
 
-        $tags = Cache::remember(
-            'categories_structure',
-            now()->addHours(12),
-            function () {
-                return Category::where('level', 2)
-                    ->where('parent_id', 2)
-                    ->whereNotIn('entity_id', [1436, 969, 1435])
-                    ->orderBy('position')
-                    ->with('childrenRecursive')
-                    ->get();
-            }
-        );
+        try {
+            $tags = Cache::remember(
+                'categories_structure',
+                now()->addHours(12),
+                function () {
+                    return Category::where('level', 2)
+                        ->where('parent_id', 2)
+                        ->whereNotIn('entity_id', [1436, 969, 1435])
+                        ->orderBy('position')
+                        ->with('childrenRecursive')
+                        ->get();
+                }
+            );
+        } catch (\Throwable $e) {
+            $tags = Category::where('level', 2)
+                ->where('parent_id', 2)
+                ->whereNotIn('entity_id', [1436, 969, 1435])
+                ->orderBy('position')
+                ->with('childrenRecursive')
+                ->get();
+        }
 
         View::share('tags', $tags);
     }

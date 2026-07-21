@@ -303,7 +303,7 @@ else
 				</div>						
 				<input type="hidden" name="correlati" id="correlati" value=""/>
 				<div style="margin-top:20px">
-					<?php include("fissi/prodotti_correlati.inc.php");?>
+					<?php include __DIR__.'/../fissi/prodotti_correlati.inc.php'; ?>
 				</div>
 				
 				<script>

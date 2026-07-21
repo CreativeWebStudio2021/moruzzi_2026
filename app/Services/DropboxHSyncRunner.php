@@ -26,6 +26,7 @@ class DropboxHSyncRunner
             allowedExtensions: config('dropbox_sync.allowed_extensions', ['html', 'jpg']),
             preservePaths: (bool) config('dropbox_sync.preserve_paths', false),
             stateFile: config('dropbox_sync.state_file'),
+            imagesSubdirectory: config('dropbox_sync.images_subdirectory'),
         );
 
         return $sync->sync($dryRun);

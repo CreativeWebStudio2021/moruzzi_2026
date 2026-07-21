@@ -23,7 +23,7 @@
 		
 		<meta name="csrf-token" content="{{ csrf_token() }}">
 		<meta name="app-locale" content="{{ app()->getLocale() }}">
-		<base href="{{ Config::get('app.url') }}/" />
+		<base href="{{ config('app.url') }}/" />
 		
 		<link rel="preload" href="/fonts/Inria_Serif/InriaSerif-Regular.woff2" as="font" type="font/woff2" crossorigin>
 		<link rel="preload" href="/fonts/fonts.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
