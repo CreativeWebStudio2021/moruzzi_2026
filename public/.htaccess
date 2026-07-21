@@ -5,6 +5,11 @@
 
     RewriteEngine On
 
+    # /h/ immagini — locale se presente, altrimenti redirect a R2 CDN (gli HTML restano sul sito)
+    RewriteCond %{REQUEST_URI} ^/h/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^h/(.+\.(jpe?g|png|gif|webp|svg|bmp|ico))$ https://img.moruzzi.it/h/$1 [R=301,L,NC]
+
     # Scorciatoia pannello amministrazione: /amministrazione.html -> /admin/amministrazione.html
     RewriteRule ^amministrazione\.html$ /admin/amministrazione.html [R=301,L]
 
