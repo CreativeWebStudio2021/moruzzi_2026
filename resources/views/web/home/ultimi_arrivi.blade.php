@@ -198,7 +198,7 @@
 									: (int) ($product->qty ?? 0);
 								$soldOut = $available <= 0;
 								$thumbUrl = product_image_url($product->image, 'thumb');
-								[$thumbSrcW, $thumbSrcH] = cache()->remember(
+								[$thumbSrcW, $thumbSrcH] = cache_remember_safe(
 									'home_thumb_dims:' . md5((string) $product->image),
 									now()->addDays(30),
 									function () use ($thumbUrl) {

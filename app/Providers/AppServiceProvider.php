@@ -7,7 +7,6 @@ use App\Listeners\MergeCartAfterLogin;
 use App\Services\MetaTagsService;
 use App\Support\GuideRegistry;
 use Illuminate\Auth\Events\Login;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -62,27 +61,18 @@ class AppServiceProvider extends ServiceProvider
                 ->with('metaImage', $meta['image'] ?? '');
         });
 
-        try {
-            $tags = Cache::remember(
-                'categories_structure',
-                now()->addHours(12),
-                function () {
-                    return Category::where('level', 2)
-                        ->where('parent_id', 2)
-                        ->whereNotIn('entity_id', [1436, 969, 1435])
-                        ->orderBy('position')
-                        ->with('childrenRecursive')
-                        ->get();
-                }
-            );
-        } catch (\Throwable $e) {
-            $tags = Category::where('level', 2)
-                ->where('parent_id', 2)
-                ->whereNotIn('entity_id', [1436, 969, 1435])
-                ->orderBy('position')
-                ->with('childrenRecursive')
-                ->get();
-        }
+        $tags = cache_remember_safe(
+            'categories_structure',
+            now()->addHours(12),
+            function () {
+                return Category::where('level', 2)
+                    ->where('parent_id', 2)
+                    ->whereNotIn('entity_id', [1436, 969, 1435])
+                    ->orderBy('position')
+                    ->with('childrenRecursive')
+                    ->get();
+            }
+        );
 
         View::share('tags', $tags);
     }

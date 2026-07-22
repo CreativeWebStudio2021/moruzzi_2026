@@ -709,6 +709,29 @@ if (!function_exists('product_video_media')) {
     }
 }
 
+if (! function_exists('cache_remember_safe')) {
+
+    /**
+     * Cache::remember resistente a errori del file store
+     * (cartelle mancanti / permessi su storage/framework/cache/data).
+     * In caso di fallimento esegue comunque il callback senza bloccare la pagina.
+     *
+     * @template T
+     * @param  \Closure(): T  $callback
+     * @return T
+     */
+    function cache_remember_safe(string $key, mixed $ttl, \Closure $callback): mixed
+    {
+        try {
+            return cache()->remember($key, $ttl, $callback);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return $callback();
+        }
+    }
+}
+
 if (!function_exists('product_image_url')) {
 
     /**
