@@ -2,7 +2,7 @@
 session_start();
 
 require_once '../config/db.php';	
-require_once '../../config/array.php';	
+require_once '../config/array.php';	
 require_once '../fissi/functions.php';
 require_once '../fissi/functions_adm.php';
 require_once '../fissi/all_posts.php';
