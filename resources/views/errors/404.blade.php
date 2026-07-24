@@ -62,7 +62,7 @@
         }
         .error-minimal__logo img {
             display: block;
-            height: 56px;
+            height: 100px;
             width: auto;
         }
         .error-minimal__code {
