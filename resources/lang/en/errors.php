@@ -8,6 +8,7 @@ return [
         'message' => 'The page you are looking for does not exist, has been removed, or the address entered is incorrect.',
         'home' => 'Back to home',
         'catalog' => 'Browse the catalog',
+        'contacts' => 'Contacts',
     ],
     '500' => [
         'meta_title' => 'Server error',

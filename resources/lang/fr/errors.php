@@ -8,6 +8,7 @@ return [
         'message' => 'La page que vous recherchez n’existe pas, a été supprimée ou l’adresse saisie est incorrecte.',
         'home' => 'Retour à l’accueil',
         'catalog' => 'Parcourir le catalogue',
+        'contacts' => 'Contact',
     ],
     '500' => [
         'meta_title' => 'Erreur serveur',

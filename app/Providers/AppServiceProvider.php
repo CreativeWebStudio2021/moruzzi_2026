@@ -50,7 +50,8 @@ class AppServiceProvider extends ServiceProvider
             if (in_array($errorPage, ['404', '500', '503'], true)) {
                 $view->with('metaTitle', __("errors.{$errorPage}.meta_title") . ' | ' . config('app.name'))
                     ->with('metaDescription', __("errors.{$errorPage}.meta_description"))
-                    ->with('metaImage', '');
+                    ->with('metaImage', '')
+                    ->with('tags', collect());
 
                 return;
             }
@@ -59,22 +60,21 @@ class AppServiceProvider extends ServiceProvider
             $view->with('metaTitle', $meta['title'])
                 ->with('metaDescription', $meta['description'])
                 ->with('metaImage', $meta['image'] ?? '');
+
+            // Categorie menu: solo quando serve il layout completo (mai sulle error page standalone).
+            $view->with('tags', cache_remember_safe(
+                'categories_structure',
+                now()->addHours(12),
+                function () {
+                    return Category::where('level', 2)
+                        ->where('parent_id', 2)
+                        ->whereNotIn('entity_id', [1436, 969, 1435])
+                        ->orderBy('position')
+                        ->with('childrenRecursive')
+                        ->get();
+                }
+            ));
         });
-
-        $tags = cache_remember_safe(
-            'categories_structure',
-            now()->addHours(12),
-            function () {
-                return Category::where('level', 2)
-                    ->where('parent_id', 2)
-                    ->whereNotIn('entity_id', [1436, 969, 1435])
-                    ->orderBy('position')
-                    ->with('childrenRecursive')
-                    ->get();
-            }
-        );
-
-        View::share('tags', $tags);
     }
 
     /**

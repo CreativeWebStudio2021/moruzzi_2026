@@ -8,6 +8,7 @@ return [
         'message' => 'La página que buscas no existe, ha sido eliminada o la dirección introducida no es correcta.',
         'home' => 'Volver al inicio',
         'catalog' => 'Explorar el catálogo',
+        'contacts' => 'Contacto',
     ],
     '500' => [
         'meta_title' => 'Error del servidor',
