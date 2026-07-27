@@ -63,14 +63,18 @@ class ProductController extends Controller
 			abort(404);
 		}
 
-		if (product_is_delisted($product)) {
+		// Nascosto in admin (visibility off): 404.
+		if (product_is_delisted($product) || ! in_array((int) ($product->visibility ?? 0), [1, 4], true)) {
 			abort(404);
 		}
 
-		// Regola business: non disponibile => scheda non raggiungibile (404, quindi deindicizzazione).
+		// Non disponibile ma ancora in catalogo: 301 verso categoria principale (deindicizzazione + UX).
 		$availableQuantity = app(ProductAvailabilityService::class)->computeForProduct($product);
-		if (! in_array((int) ($product->visibility ?? 0), [1, 4], true) || (int) ($product->disponibili ?? 0) <= 0 || $availableQuantity <= 0) {
-			abort(404);
+		if ((int) ($product->disponibili ?? 0) <= 0 || $availableQuantity <= 0) {
+			return redirect()->to(
+				product_delisted_redirect_url($product, $locale),
+				301
+			);
 		}
 
 		/*
