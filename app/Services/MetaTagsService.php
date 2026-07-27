@@ -171,22 +171,56 @@ class MetaTagsService
     protected function metaProduct(Request $request): array
     {
         $productPath = $request->route('productPath');
-        if (!preg_match('/^(.+)-([0-9]+)\.html$/i', $productPath, $m)) {
+        if (! is_string($productPath) || $productPath === '') {
+            $path = $request->path();
+            $locale = app()->getLocale();
+            if (str_starts_with($path, $locale.'/')) {
+                $productPath = substr($path, strlen($locale) + 1);
+            } else {
+                $productPath = $path;
+            }
+        }
+
+        // Collisione URL categoria/prodotto (es. …-1816.html): priorità alla categoria.
+        $locale = app()->getLocale();
+        $fullLink = str_ends_with($productPath, '.html') ? $productPath : $productPath.'.html';
+        $category = resolve_category_by_link($fullLink, $locale);
+        if ($category) {
+            $page = (int) $request->query('page', 1);
+            $name = $category->translated_name;
+            $title = $name.($page > 1 ? ' - '.__('seo.page').' '.$page : '').' | '.$this->siteName;
+            $descCol = 'description_'.$locale;
+            $descContent = $category->{$descCol} ?? $category->description ?? '';
+            $desc = $descContent !== ''
+                ? strip_tags($descContent)
+                : (__('seo.products_discover_in').' '.$name);
+            if ($page > 1) {
+                $desc .= ' - '.__('seo.page').' '.$page;
+            }
+            $desc .= ' - '.$this->siteName;
+
+            return [
+                'title' => $title,
+                'description' => \Illuminate\Support\Str::limit($desc, 160),
+                'image' => '',
+            ];
+        }
+
+        if (! preg_match('/^(.+)-([0-9]+)\.html$/i', $productPath, $m)) {
             return ['title' => $this->siteName, 'description' => $this->siteName];
         }
 
         $id = (int) $m[2];
         $product = Product::find($id);
-        if (!$product) {
+        if (! $product) {
             return ['title' => $this->siteName, 'description' => $this->siteName];
         }
 
-        $locale = app()->getLocale();
-        $name = $product->{'name_' . $locale} ?? $product->name;
+        $name = $product->{'name_'.$locale} ?? $product->name;
 
         $title = $product->meta_title ?? null;
         if (empty($title)) {
-            $title = $name . ' | ' . $this->siteName;
+            $title = $name.' | '.$this->siteName;
         }
 
         $description = $product->meta_description ?? null;

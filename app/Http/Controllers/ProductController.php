@@ -41,17 +41,25 @@ class ProductController extends Controller
 		$slug = $matches[1];
 		$id   = (int) $matches[2];
 
+		/*
+		|--------------------------------------------------------------------------
+		| CATEGORIA PRIMA DEL PRODOTTO
+		|--------------------------------------------------------------------------
+		| Alcuni link categoria finiscono con "-{anno}.html" (es. regno-di-sicilia-1127-1816.html)
+		| e collidono con la route prodotto. Se il path corrisponde a una categoria, va servita
+		| quella — altrimenti si rischia un 301 verso un prodotto con lo stesso entity_id.
+		*/
+		$category = resolve_category_by_link($path, $locale);
+		if ($category) {
+			return app(CatalogController::class)->category(
+				$request,
+				preg_replace('/\.html$/', '', $path)
+			);
+		}
+
 		$product = Product::where('entity_id', $id)->first();
 
 		if (! $product) {
-			$category = resolve_category_by_link($path, $locale);
-			if ($category) {
-				return app(CatalogController::class)->category(
-					$request,
-					preg_replace('/\.html$/', '', $path)
-				);
-			}
-
 			abort(404);
 		}
 
