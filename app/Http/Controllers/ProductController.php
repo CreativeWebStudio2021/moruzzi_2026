@@ -64,10 +64,13 @@ class ProductController extends Controller
 		}
 
 		if (product_is_delisted($product)) {
-			return redirect()->to(
-				product_delisted_redirect_url($product, $locale),
-				301
-			);
+			abort(404);
+		}
+
+		// Regola business: non disponibile => scheda non raggiungibile (404, quindi deindicizzazione).
+		$availableQuantity = app(ProductAvailabilityService::class)->computeForProduct($product);
+		if (! in_array((int) ($product->visibility ?? 0), [1, 4], true) || (int) ($product->disponibili ?? 0) <= 0 || $availableQuantity <= 0) {
+			abort(404);
 		}
 
 		/*
@@ -112,9 +115,8 @@ class ProductController extends Controller
 				->values()
 				->all();
 			if (!empty($ids)) {
-				$related = Product::whereIn('entity_id', $ids)
-					->whereIn('visibility', [1, 4])
-					->where('qty', '>', 0)
+				$related = app(ProductAvailabilityService::class)
+					->applyPublicAvailabilityConstraints(Product::whereIn('entity_id', $ids))
 					->where('entity_id', '!=', $product->entity_id)
 					->get();
 				$relatedProducts = $related->sortBy(function ($p) use ($ids) {
@@ -128,7 +130,6 @@ class ProductController extends Controller
 			collect([$product])->concat($relatedProducts)
 		);
 
-		$availableQuantity = $product->availableQuantity();
 		$cartQuantity = $this->cartItemQuantity($product->entity_id);
 		$guideLinks = $this->guideCommerce->guideLinksForProduct($product);
 

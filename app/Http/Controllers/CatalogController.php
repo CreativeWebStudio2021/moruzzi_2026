@@ -358,9 +358,8 @@ class CatalogController extends Controller
 
     private function buildProductQuery(?string $categoryId, string $searchQuery)
     {
-        $q = Product::query()
-            ->whereIn('visibility', [1, 4])
-            ->where('qty', '>', 0);
+        $q = app(ProductAvailabilityService::class)
+            ->applyPublicAvailabilityConstraints(Product::query());
 
         if ($categoryId !== null && $categoryId !== '') {
             $q->where('categorie', 'LIKE', '%@' . (int) $categoryId . '@%');

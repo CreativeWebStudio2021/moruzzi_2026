@@ -44,8 +44,8 @@ class HomeController extends Controller
             'home_products_'.$categoryId,
             now()->addMinutes(15),
             function () use ($categoryId) {
-                return Product::whereIn('visibility', [1, 4])
-                    ->where('qty', '>', 0)
+                return app(ProductAvailabilityService::class)
+                    ->applyPublicAvailabilityConstraints(Product::query())
                     ->where('categorie', 'LIKE', '%@'.$categoryId.'@%')
                     ->orderByDesc('entity_id')
                     ->take(10)

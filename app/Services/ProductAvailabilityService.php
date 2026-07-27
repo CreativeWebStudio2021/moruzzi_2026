@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\CartItem;
 use App\Models\OrderItem;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 
@@ -20,6 +21,50 @@ class ProductAvailabilityService
     ];
 
     private const CACHE_TTL_SECONDS = 90;
+
+    /**
+     * Vincoli query per mostrare solo prodotti realmente disponibili online:
+     * - visibili (1,4)
+     * - qty > 0
+     * - disponibili > 0 (legacy Magento)
+     * - qty netto (al netto di ordini aperti + carrelli attivi) > 0
+     */
+    public function applyPublicAvailabilityConstraints(Builder $query): Builder
+    {
+        $modelTable = $query->getModel()->getTable();
+        $connection = $query->getModel()->getConnection();
+        $prefix = $connection->getTablePrefix();
+        $productTable = $prefix.$modelTable;
+        $orderItemsTable = $prefix.(new OrderItem())->getTable();
+        $ordersTable = $prefix.'ordini';
+        $cartItemsTable = $prefix.(new CartItem())->getTable();
+        $cartsTable = $prefix.'carts';
+
+        $openStatuses = collect(self::OPEN_ORDER_STATUSES)
+            ->map(fn (string $status) => "'".str_replace("'", "''", $status)."'")
+            ->implode(',');
+
+        $reservedByOrdersSql = "COALESCE((SELECT SUM(op.quantita)
+            FROM {$orderItemsTable} op
+            INNER JOIN {$ordersTable} o ON o.id = op.id_ord
+            WHERE op.id_prod = {$productTable}.entity_id
+              AND o.status IN ({$openStatuses})
+        ), 0)";
+
+        $reservedByCartsSql = "COALESCE((SELECT SUM(ci.quantity)
+            FROM {$cartItemsTable} ci
+            INNER JOIN {$cartsTable} c ON c.id = ci.cart_id
+            WHERE ci.product_id = {$productTable}.entity_id
+              AND c.status = 'active'
+              AND (c.expires_at IS NULL OR c.expires_at > NOW())
+        ), 0)";
+
+        return $query
+            ->whereIn("{$modelTable}.visibility", [1, 4])
+            ->where("{$modelTable}.qty", '>', 0)
+            ->where("{$modelTable}.disponibili", '>', 0)
+            ->whereRaw("({$productTable}.qty - {$reservedByOrdersSql} - {$reservedByCartsSql}) > 0");
+    }
 
     /**
      * Calcola la disponibilità per molti prodotti con 2 query aggregate.

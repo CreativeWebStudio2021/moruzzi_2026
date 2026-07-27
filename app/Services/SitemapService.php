@@ -424,9 +424,8 @@ class SitemapService
 
     protected function visibleProductsQuery(array $columns): Builder
     {
-        return Product::query()
-            ->whereIn('visibility', [1, 4])
-            ->where('qty', '>', 0)
+        return app(ProductAvailabilityService::class)
+            ->applyPublicAvailabilityConstraints(Product::query())
             ->select($columns)
             ->orderBy('entity_id');
     }
