@@ -11,6 +11,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\SiteAnnouncementController;
 use App\Support\GuideRegistry;
 
 /*
@@ -208,6 +209,8 @@ Route::group([
 
     Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
     Route::get('/newsletter/dismiss', [NewsletterController::class, 'dismiss'])->name('newsletter.dismiss');
+    Route::post('/avviso/chiudi', [SiteAnnouncementController::class, 'dismiss'])->name('announcement.dismiss');
+    Route::post('/avviso/riapri', [SiteAnnouncementController::class, 'reopen'])->name('announcement.reopen');
 
     Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog.index');
     Route::post('/catalogo/load-products', [CatalogController::class, 'loadProducts'])->name('catalog.load');
@@ -407,6 +410,8 @@ Route::middleware('setlocale')->group(function () {
 
     Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
     Route::get('/newsletter/dismiss', [NewsletterController::class, 'dismiss'])->name('newsletter.dismiss');
+    Route::post('/avviso/chiudi', [SiteAnnouncementController::class, 'dismiss'])->name('announcement.dismiss');
+    Route::post('/avviso/riapri', [SiteAnnouncementController::class, 'reopen'])->name('announcement.reopen');
 
     Route::get('/catalogo', [CatalogController::class, 'index'])->name('catalog.index');
     Route::post('/catalogo/load-products', [CatalogController::class, 'loadProducts'])->name('catalog.load');

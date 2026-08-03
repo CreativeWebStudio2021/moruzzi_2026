@@ -406,6 +406,7 @@
 				@include('web.common.intro')
 			@endif
 			@include('web.common.header')
+			@include('web.common.site-announcement')
 			@yield('content') 
 			@include('web.common.registrati')
 			@include('web.common.footer')		

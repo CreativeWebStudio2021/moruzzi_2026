@@ -59,6 +59,7 @@
 			
 			<li style="margin-top:20px" <?php if($cmd=="clienti" || $cmd=="clienti_mod"){?>class="active"<?php }?>><a href="admin.php?cmd=clienti"><i class="icon-business-card"></i> Clienti</a></li>
 			<li style="margin-top:20px" <?php if($cmd=="newsletter"){?>class="active"<?php }?>><a href="admin.php?cmd=newsletter"><i class="icon-newspaper"></i> Newsletter</a></li>
+			<li style="margin-top:20px" <?php if($cmd=="annuncio"){?>class="active"<?php }?>><a href="admin.php?cmd=annuncio"><i class="icon-warning-sign"></i> Messaggio sito</a></li>
 			
 			<?php  if(isset($_GET['stato_ric'])) $stato_ric=$_GET['stato_ric']; else $stato_ric=""; ?>
 			<li style="margin-top:20px">

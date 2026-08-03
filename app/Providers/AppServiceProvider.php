@@ -51,7 +51,10 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('metaTitle', __("errors.{$errorPage}.meta_title") . ' | ' . config('app.name'))
                     ->with('metaDescription', __("errors.{$errorPage}.meta_description"))
                     ->with('metaImage', '')
-                    ->with('tags', collect());
+                    ->with('tags', collect())
+                    ->with('siteAnnouncement', null)
+                    ->with('siteAnnouncementActive', false)
+                    ->with('siteAnnouncementDismissed', false);
 
                 return;
             }
@@ -74,6 +77,24 @@ class AppServiceProvider extends ServiceProvider
                         ->get();
                 }
             ));
+
+            $siteAnnouncement = null;
+            $siteAnnouncementActive = false;
+            $siteAnnouncementDismissed = false;
+            try {
+                $siteAnnouncement = \App\Models\SiteAnnouncement::current();
+                $siteAnnouncementActive = (bool) ($siteAnnouncement && $siteAnnouncement->isActive());
+                if ($siteAnnouncementActive) {
+                    $dismissedToken = (string) session('site_announcement_dismissed', '');
+                    $siteAnnouncementDismissed = $dismissedToken !== ''
+                        && hash_equals($siteAnnouncement->dismissToken(), $dismissedToken);
+                }
+            } catch (\Throwable $e) {
+                // Tabella assente o DB non pronto: banner silenzioso.
+            }
+            $view->with('siteAnnouncement', $siteAnnouncement)
+                ->with('siteAnnouncementActive', $siteAnnouncementActive)
+                ->with('siteAnnouncementDismissed', $siteAnnouncementDismissed);
         });
     }
 
