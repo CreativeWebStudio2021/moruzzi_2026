@@ -20,12 +20,22 @@ class PayPalController extends Controller
     public function ipn(Request $request)
     {
         if (! $this->payPal->validateIpn($request)) {
-            Log::warning('PayPal IPN non verificato', ['payload' => $request->all()]);
+            Log::warning('PayPal IPN non verificato', [
+                'txn_id'         => $request->input('txn_id'),
+                'payment_status' => $request->input('payment_status'),
+                'custom'         => $request->input('custom'),
+            ]);
 
             return response('INVALID', 200);
         }
 
-        $this->payPal->processPaymentNotification($request->all(), 'ipn');
+        $processed = $this->payPal->processPaymentNotification($request->all(), 'ipn');
+
+        Log::info('PayPal IPN verificato', [
+            'txn_id'    => $request->input('txn_id'),
+            'custom'    => $request->input('custom'),
+            'processed' => $processed,
+        ]);
 
         return response('OK', 200);
     }

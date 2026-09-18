@@ -157,19 +157,66 @@ class PayPalService
 
     public function validateIpn(Request $request): bool
     {
-        $payload = array_merge(['cmd' => '_notify-validate'], $request->all());
+        // PayPal richiede il body POST originale + cmd=_notify-validate.
+        // Non usare $request->all(): ConvertEmptyStringsToNull/TrimStrings e
+        // il re-encoding rompono la verifica (risposta sempre INVALID).
+        $rawBody = $this->ipnRawBody($request);
+        if ($rawBody === '') {
+            Log::warning('PayPal IPN validation skipped: empty body');
+
+            return false;
+        }
+
+        $payload = 'cmd=_notify-validate&'.$rawBody;
 
         try {
-            $response = Http::asForm()
+            $response = Http::withBody($payload, 'application/x-www-form-urlencoded')
+                ->withHeaders(['User-Agent' => 'Moruzzi-PayPal-IPN/1.0'])
                 ->timeout(30)
-                ->post($this->ipnValidationUrl(), $payload);
+                ->post($this->ipnValidationUrl());
         } catch (\Throwable $e) {
             Log::error('PayPal IPN validation request failed', ['message' => $e->getMessage()]);
 
             return false;
         }
 
-        return trim($response->body()) === 'VERIFIED';
+        $body = trim($response->body());
+        $verified = $body === 'VERIFIED';
+
+        if (! $verified) {
+            Log::warning('PayPal IPN validation response not VERIFIED', [
+                'http_status' => $response->status(),
+                'response'    => Str::limit($body, 300),
+            ]);
+        }
+
+        return $verified;
+    }
+
+    /**
+     * Body grezzo dell'IPN, come inviato da PayPal (charset windows-1252 incluso).
+     */
+    protected function ipnRawBody(Request $request): string
+    {
+        $content = (string) $request->getContent();
+        if ($content !== '') {
+            return ltrim($content, '?');
+        }
+
+        // Fallback: ricostruisci da $_POST senza passare dal Request bag Laravel.
+        if ($_POST === []) {
+            return '';
+        }
+
+        $parts = [];
+        foreach ($_POST as $key => $value) {
+            if (is_array($value)) {
+                continue;
+            }
+            $parts[] = rawurlencode((string) $key).'='.rawurlencode(stripslashes((string) $value));
+        }
+
+        return implode('&', $parts);
     }
 
     /**

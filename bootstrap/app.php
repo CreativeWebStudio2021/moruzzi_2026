@@ -40,6 +40,12 @@ return Application::configure(basePath: dirname(__DIR__))
 			'ipn.php',
 			'paypal/response',
 		]);
+
+		// Non alterare i campi IPN: PayPal rifiuta la verifica se stringhe vuote
+		// diventano null o se vengono trimmati spazi.
+		$isPayPalCallback = static fn (\Illuminate\Http\Request $request): bool => $request->is('ipn.php', 'paypal/response');
+		$middleware->convertEmptyStringsToNull(except: [$isPayPalCallback]);
+		$middleware->trimStrings(except: [$isPayPalCallback]);
 	})
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
