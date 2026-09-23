@@ -24,7 +24,21 @@
         font-size: 15px;
         line-height: 1.45;
         font-weight: 600;
-        white-space: pre-line;
+    }
+    .site-announcement__text p {
+        margin: 0 0 0.55em;
+    }
+    .site-announcement__text p:last-child {
+        margin-bottom: 0;
+    }
+    .site-announcement__text ul,
+    .site-announcement__text ol {
+        margin: 0.35em 0 0.55em;
+        padding-left: 1.25em;
+    }
+    .site-announcement__text a {
+        color: inherit;
+        text-decoration: underline;
     }
     .site-announcement__close {
         position: absolute;
@@ -79,7 +93,7 @@
 @if($siteAnnouncementActive && ! $siteAnnouncementDismissed)
     <div class="site-announcement" role="status" aria-live="polite" id="siteAnnouncement">
         <div class="site-announcement__inner">
-            <p class="site-announcement__text">{{ $siteAnnouncement->message }}</p>
+            <div class="site-announcement__text">{!! $siteAnnouncement->localizedMessageHtml() !!}</div>
         </div>
         <form method="post" action="{{ locale_route('announcement.dismiss') }}" style="margin:0;">
             @csrf

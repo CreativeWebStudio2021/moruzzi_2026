@@ -83,7 +83,7 @@ class AppServiceProvider extends ServiceProvider
             $siteAnnouncementDismissed = false;
             try {
                 $siteAnnouncement = \App\Models\SiteAnnouncement::current();
-                $siteAnnouncementActive = (bool) ($siteAnnouncement && $siteAnnouncement->isActive());
+                $siteAnnouncementActive = (bool) ($siteAnnouncement && $siteAnnouncement->isVisibleToVisitor(request()));
                 if ($siteAnnouncementActive) {
                     $dismissedToken = (string) session('site_announcement_dismissed', '');
                     $siteAnnouncementDismissed = $dismissedToken !== ''

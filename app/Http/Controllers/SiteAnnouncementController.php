@@ -11,7 +11,7 @@ class SiteAnnouncementController extends Controller
     public function dismiss(Request $request): RedirectResponse
     {
         $announcement = SiteAnnouncement::current();
-        if ($announcement && $announcement->isActive()) {
+        if ($announcement && $announcement->isVisibleToVisitor($request)) {
             $request->session()->put('site_announcement_dismissed', $announcement->dismissToken());
         }
 
