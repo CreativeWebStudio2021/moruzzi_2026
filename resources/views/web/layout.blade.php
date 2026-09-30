@@ -465,7 +465,7 @@
 
 				@if ($errors->any() && request()->routeIs('register'))
 					if (typeof showToast === 'function') {
-						showToast(@json(__('auth.register_error')), 'error');
+						showToast(@json($errors->first('email') === __('auth.registration_blocked') ? __('auth.registration_blocked') : __('auth.register_error')), 'error');
 					}
 				@endif
 

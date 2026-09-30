@@ -42,6 +42,7 @@ return [
     'hide_password'          => 'Masquer le mot de passe',
 
     // Erreur générique de formulaire
+    'registration_blocked'   => 'Impossible d’enregistrer cet utilisateur. Veuillez contacter Moruzzi Numismatica pour obtenir de l’aide.',
     'form_error'             => 'Vérifiez les champs en évidence et réessayez.',
 ];
 

@@ -42,6 +42,7 @@ return [
     'hide_password'          => 'Hide password',
 
     // Generic form error
+    'registration_blocked'   => 'It is not possible to register this user. Please contact Moruzzi Numismatica for assistance.',
     'form_error'             => 'Please check the highlighted fields and try again.',
 ];
 

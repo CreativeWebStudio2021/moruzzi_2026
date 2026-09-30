@@ -10,6 +10,7 @@ use App\Services\CartService;
 use App\Services\OrderConfirmationNotificationService;
 use App\Services\PayPalService;
 use App\Services\ProductAvailabilityService;
+use App\Support\RegistrationBlocklist;
 use Illuminate\Http\Request;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\Auth;
@@ -553,6 +554,18 @@ class CheckoutController extends Controller
             throw new HttpResponseException(
                 redirect()->to(locale_route('checkout.guest'))
                     ->withErrors(['email' => __('checkout.guest_email_registered')])
+                    ->withInput($guest)
+            );
+        }
+
+        if (RegistrationBlocklist::matches(
+            (string) ($guest['nome'] ?? ''),
+            (string) ($guest['cognome'] ?? ''),
+            (string) ($guest['email'] ?? ''),
+        )) {
+            throw new HttpResponseException(
+                redirect()->to(locale_route('checkout.guest'))
+                    ->withErrors(['email' => __('auth.registration_blocked')])
                     ->withInput($guest)
             );
         }

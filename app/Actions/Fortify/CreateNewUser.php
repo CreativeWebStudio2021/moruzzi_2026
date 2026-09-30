@@ -4,6 +4,7 @@ namespace App\Actions\Fortify;
 
 use App\Models\Customer;
 use App\Services\RegistrationNotificationService;
+use App\Support\RegistrationBlocklist;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
@@ -37,8 +38,18 @@ class CreateNewUser implements CreatesNewUsers
             'privacy' => ['accepted'],
             'newsletter' => ['nullable', 'boolean'],
         ])->validate();
-        
-        $newsletter = !empty($input['newsletter']) ? '1' : '0';
+
+        if (RegistrationBlocklist::matches(
+            (string) ($input['nome'] ?? ''),
+            (string) ($input['cognome'] ?? ''),
+            (string) ($input['email'] ?? ''),
+        )) {
+            throw ValidationException::withMessages([
+                'email' => [__('auth.registration_blocked')],
+            ]);
+        }
+
+        $newsletter = ! empty($input['newsletter']) ? '1' : '0';
 
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $code = '';

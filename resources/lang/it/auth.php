@@ -44,6 +44,7 @@ return [
     // Messaggi registrazione
     'register_success'       => 'Registrazione completata con successo.',
     'register_error'         => 'Errore durante la registrazione. Controlla i campi evidenziati.',
+    'registration_blocked'   => 'Impossibile registrare questo utente. Contatta Moruzzi Numismatica per assistenza.',
     'form_error'             => 'Controlla i campi evidenziati e riprova.',
 ];
 
