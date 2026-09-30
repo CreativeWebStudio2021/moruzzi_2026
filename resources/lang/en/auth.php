@@ -32,6 +32,7 @@ return [
 
     // Login / security messages
     'failed'                 => 'These credentials do not match our records.',
+    'inactive'               => 'Your account is not active. Please contact Moruzzi Numismatica for assistance.',
     'throttle'               => 'Too many login attempts. Please try again in :seconds seconds.',
     'login_success'          => 'You have been logged in successfully.',
 

@@ -457,7 +457,7 @@
 					}
 				@endif
 
-				@if (!empty($emailError) && $emailError === __('auth.failed'))
+				@if (!empty($emailError) && in_array($emailError, [__('auth.failed'), __('auth.inactive')], true))
 					if (typeof showToast === 'function') {
 						showToast(@json($emailError), 'error');
 					}

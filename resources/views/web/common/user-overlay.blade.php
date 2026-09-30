@@ -249,7 +249,7 @@
 		$overlayEmailError = $errors->first('email');
 	@endphp
 
-	@if (!empty($overlayEmailError) && $overlayEmailError === __('auth.failed'))
+	@if (!empty($overlayEmailError) && in_array($overlayEmailError, [__('auth.failed'), __('auth.inactive')], true))
 	document.addEventListener('DOMContentLoaded', function () {
 		openUserPanel();
 	});

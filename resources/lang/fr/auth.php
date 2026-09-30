@@ -32,6 +32,7 @@ return [
 
     // Messages de connexion / sécurité
     'failed'                 => 'Ces identifiants ne correspondent pas à nos enregistrements.',
+    'inactive'               => 'Votre compte n’est pas actif. Veuillez contacter Moruzzi Numismatica pour obtenir de l’aide.',
     'throttle'               => 'Trop de tentatives de connexion. Veuillez réessayer dans :seconds secondes.',
     'login_success'          => 'Vous êtes connecté avec succès.',
 

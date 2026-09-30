@@ -32,6 +32,7 @@ return [
 
     // Meldungen für Login / Sicherheit
     'failed'                 => 'Diese Zugangsdaten stimmen nicht mit unseren Unterlagen überein.',
+    'inactive'               => 'Ihr Konto ist nicht aktiv. Bitte kontaktieren Sie Moruzzi Numismatica für Unterstützung.',
     'throttle'               => 'Zu viele Anmeldeversuche. Bitte versuchen Sie es in :seconds Sekunden erneut.',
     'login_success'          => 'Sie wurden erfolgreich angemeldet.',
 

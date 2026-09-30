@@ -8,10 +8,13 @@ use App\Actions\Fortify\UpdateUserPassword;
 use App\Actions\Fortify\UpdateUserProfileInformation;
 use App\Actions\Fortify\LoginResponse as CustomLoginResponse;
 use App\Actions\Fortify\RegisterResponse as CustomRegisterResponse;
+use App\Models\Customer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\ValidationException;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Fortify;
@@ -52,6 +55,27 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::updateUserProfileInformationUsing(UpdateUserProfileInformation::class);
         Fortify::updateUserPasswordsUsing(UpdateUserPassword::class);
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
+
+        // Blocca il login se l'account non è attivo (confermato = 0).
+        Fortify::authenticateUsing(function (Request $request) {
+            $username = (string) $request->input(Fortify::username());
+
+            $user = Customer::query()
+                ->whereRaw('LOWER('.Fortify::username().') = ?', [strtolower($username)])
+                ->first();
+
+            if (! $user || ! Hash::check((string) $request->input('password'), (string) $user->password)) {
+                return null;
+            }
+
+            if ((string) $user->confermato !== '1') {
+                throw ValidationException::withMessages([
+                    Fortify::username() => [__('auth.inactive')],
+                ]);
+            }
+
+            return $user;
+        });
 
         // View personalizzate
         Fortify::loginView(function () {

@@ -32,6 +32,7 @@ return [
 
     // Mensajes de inicio de sesión / seguridad
     'failed'                 => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
+    'inactive'               => 'Tu cuenta no está activa. Contacta con Moruzzi Numismatica para obtener ayuda.',
     'throttle'               => 'Demasiados intentos de inicio de sesión. Vuelve a intentarlo en :seconds segundos.',
     'login_success'          => 'Has iniciado sesión correctamente.',
 

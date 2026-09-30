@@ -32,6 +32,7 @@ return [
 
     // Messaggi di esito login / sicurezza
     'failed'                 => 'Le credenziali fornite non sono corrette.',
+    'inactive'               => 'Il tuo account non è attivo. Contatta Moruzzi Numismatica per assistenza.',
     'throttle'               => 'Troppi tentativi di login. Riprova tra :seconds secondi.',
     'login_success'          => 'Login effettuato correttamente.',
 
