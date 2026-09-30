@@ -50,8 +50,13 @@ class AccountController extends Controller
         ]);
     }
 
-    public function orderDetail(Order $order)
+    public function orderDetail()
     {
+        $order = request()->route('order');
+        if (! $order instanceof Order) {
+            $order = Order::findOrFail($order);
+        }
+
         /** @var Customer $customer */
         $customer = auth()->user();
 

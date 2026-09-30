@@ -27,6 +27,7 @@ class DropboxHSyncRunner
             preservePaths: (bool) config('dropbox_sync.preserve_paths', false),
             stateFile: config('dropbox_sync.state_file'),
             imagesSubdirectory: config('dropbox_sync.images_subdirectory'),
+            certificateImages: app(CertificateImageR2Service::class),
         );
 
         return $sync->sync($dryRun);

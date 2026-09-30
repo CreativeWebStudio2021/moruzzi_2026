@@ -23,10 +23,12 @@ return [
 
     'target_path' => public_path('h'),
 
-    'allowed_extensions' => ['html', 'jpg', 'jpeg'],
+    'allowed_extensions' => ['html', 'jpg', 'jpeg', 'psd'],
 
     /*
-    | Sottocartella di public/h dove salvare le immagini (html restano in public/h).
+    | Staging temporaneo per JPG/PSD prima dell'upload su R2 (chiave h/<file>).
+    | Dopo upload riuscito la copia locale viene eliminata. HTML restano in public/h.
+    | Se l'upload R2 fallisce, il file resta qui per un retry successivo.
     */
     'images_subdirectory' => 'img',
 
@@ -39,9 +41,14 @@ return [
     'state_file' => storage_path('app/dropbox_h_sync_state.json'),
 
     /*
-    | Token segreto per avviare la sync via URL:
-    | GET /internal/dropbox-sync?token=IL_TUO_SEGRETO
-    | Opzionale: &dry_run=1 per solo anteprima
+    | Sync manuale:
+    |   php artisan dropbox:sync-h
+    |   php artisan dropbox:sync-h --dry-run
+    |   GET /internal/dropbox-sync?token=IL_TUO_SEGRETO
+    |   Opzionale: &dry_run=1 per solo anteprima
+    |
+    | Scheduler: dailyAt 02:30 (routes/console.php).
     */
     'webhook_secret' => env('DROPBOX_SYNC_WEBHOOK_SECRET'),
 ];
+

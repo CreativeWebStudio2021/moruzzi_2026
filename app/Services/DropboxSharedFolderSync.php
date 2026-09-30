@@ -5,6 +5,7 @@ namespace App\Services;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use RuntimeException;
 
 class DropboxSharedFolderSync
@@ -18,6 +19,9 @@ class DropboxSharedFolderSync
     /** @var array<string, int> */
     private array $localIndex = [];
 
+    /** @var array<string, int> basename lowercase => size su R2 */
+    private array $r2ImageIndex = [];
+
     public function __construct(
         private readonly ?string $sharedLinkUrl,
         private readonly ?string $accessToken,
@@ -27,6 +31,7 @@ class DropboxSharedFolderSync
         private readonly bool $preservePaths,
         private readonly string $stateFile,
         private readonly ?string $imagesSubdirectory = null,
+        private readonly ?CertificateImageR2Service $certificateImages = null,
     ) {}
 
     /**
@@ -41,6 +46,9 @@ class DropboxSharedFolderSync
         }
 
         $this->localIndex = $this->buildLocalIndex();
+        $this->r2ImageIndex = $this->certificateImages?->isConfigured()
+            ? $this->certificateImages->buildSizeIndex()
+            : [];
 
         $stats = [
             'listed' => 0,
@@ -65,10 +73,42 @@ class DropboxSharedFolderSync
 
             $dropboxPath = ltrim(str_replace('\\', '/', $entry['path_display'] ?? $entry['path_lower'] ?? $entry['name'] ?? ''), '/');
             $relativePath = $this->relativePath($dropboxPath);
-            $localPath = $this->localPath($relativePath);
+            $extension = strtolower(pathinfo((string) ($entry['name'] ?? ''), PATHINFO_EXTENSION));
+            $isPsd = $extension === 'psd';
+            $isImage = $isPsd || $this->isImageFile((string) ($entry['name'] ?? ''));
+            $localPath = $isPsd
+                ? $this->localPathForConvertedImage($relativePath, 'jpg')
+                : $this->localPath($relativePath);
             $remoteSize = (int) ($entry['size'] ?? 0);
+            $outputName = basename($localPath);
 
-            if ($this->fileAlreadyPresent($localPath, $remoteSize)) {
+            if ($isImage) {
+                if ($this->imageAlreadyOnR2($outputName, $isPsd, $remoteSize)) {
+                    $stats['skipped']++;
+
+                    continue;
+                }
+
+                // Reliquia locale da upload R2 fallito: riprova solo l'upload.
+                if (! $dryRun && is_file($localPath) && ($isPsd || $this->fileAlreadyPresent($localPath, $remoteSize))) {
+                    $stats['missing']++;
+                    try {
+                        $uploadedSize = (int) filesize($localPath);
+                        $this->uploadImageToR2AndCleanup($localPath, $outputName);
+                        $stats['downloaded']++;
+                        $this->r2ImageIndex[strtolower($outputName)] = $uploadedSize;
+                    } catch (\Throwable $e) {
+                        $message = "{$relativePath}: {$e->getMessage()}";
+                        $stats['errors'][] = $message;
+                        Log::warning('Dropbox sync R2 upload failed', [
+                            'path' => $relativePath,
+                            'error' => $e->getMessage(),
+                        ]);
+                    }
+
+                    continue;
+                }
+            } elseif ($this->fileAlreadyPresent($localPath, $remoteSize)) {
                 $stats['skipped']++;
 
                 continue;
@@ -81,9 +121,20 @@ class DropboxSharedFolderSync
             }
 
             try {
-                $this->downloadFile($dropboxPath, $localPath);
+                if ($isImage) {
+                    if ($isPsd) {
+                        $this->downloadAndConvertPsdToJpeg($dropboxPath, $localPath);
+                    } else {
+                        $this->downloadFile($dropboxPath, $localPath);
+                    }
+                    $uploadedSize = is_file($localPath) ? (int) filesize($localPath) : $remoteSize;
+                    $this->uploadImageToR2AndCleanup($localPath, $outputName);
+                    $this->r2ImageIndex[strtolower($outputName)] = $uploadedSize;
+                } else {
+                    $this->downloadFile($dropboxPath, $localPath);
+                    $this->localIndex[strtolower(basename($localPath))] = $remoteSize;
+                }
                 $stats['downloaded']++;
-                $this->localIndex[strtolower(basename($localPath))] = $remoteSize;
             } catch (\Throwable $e) {
                 $message = "{$relativePath}: {$e->getMessage()}";
                 $stats['errors'][] = $message;
@@ -99,6 +150,41 @@ class DropboxSharedFolderSync
         }
 
         return $stats;
+    }
+
+    private function imageAlreadyOnR2(string $filename, bool $isPsd, int $remoteSize): bool
+    {
+        $key = strtolower(basename($filename));
+
+        if (! array_key_exists($key, $this->r2ImageIndex)) {
+            return false;
+        }
+
+        // JPG convertiti da PSD: basta presenza su R2 (size diversa dal PSD remoto).
+        if ($isPsd) {
+            return true;
+        }
+
+        if ($remoteSize <= 0) {
+            return true;
+        }
+
+        return $this->r2ImageIndex[$key] === $remoteSize;
+    }
+
+    private function uploadImageToR2AndCleanup(string $localPath, string $filename): void
+    {
+        if ($this->certificateImages === null || ! $this->certificateImages->isConfigured()) {
+            throw new RuntimeException('R2 non configurato: impossibile caricare le immagini certificate senza accumulo locale.');
+        }
+
+        $this->certificateImages->upload($localPath, $filename);
+
+        if (is_file($localPath) && ! @unlink($localPath)) {
+            Log::warning('Dropbox sync: upload R2 ok ma impossibile eliminare copia locale', [
+                'path' => $localPath,
+            ]);
+        }
     }
 
     private function assertConfigured(): void
@@ -193,7 +279,56 @@ class DropboxSharedFolderSync
     private function downloadFile(string $dropboxPath, string $localPath): void
     {
         $this->prepareLocalFile($localPath);
+        $written = file_put_contents($localPath, $this->downloadFileContent($dropboxPath));
 
+        if ($written === false) {
+            throw new RuntimeException('Impossibile scrivere il file locale.');
+        }
+    }
+
+    private function downloadAndConvertPsdToJpeg(string $dropboxPath, string $jpegPath): void
+    {
+        $this->prepareLocalFile($jpegPath);
+
+        $tmpPsd = '/tmp/dropbox_psd_'.Str::uuid().'.psd';
+        $tmpJpg = '/tmp/dropbox_psd_'.Str::uuid().'.jpg';
+
+        try {
+            $written = file_put_contents($tmpPsd, $this->downloadFileContent($dropboxPath));
+            if ($written === false) {
+                throw new RuntimeException('Impossibile scrivere il PSD temporaneo.');
+            }
+
+            $command = sprintf(
+                'convert %s -auto-orient -colorspace sRGB -quality 92 %s 2>&1',
+                escapeshellarg($tmpPsd.'[0]'),
+                escapeshellarg($tmpJpg)
+            );
+
+            exec($command, $output, $exitCode);
+
+            if ($exitCode !== 0 || ! is_file($tmpJpg)) {
+                throw new RuntimeException('Conversione PSD→JPG fallita: '.implode(' ', $output));
+            }
+
+            if (! @rename($tmpJpg, $jpegPath)) {
+                $moved = @copy($tmpJpg, $jpegPath);
+                if (! $moved) {
+                    throw new RuntimeException('Impossibile salvare il JPG convertito.');
+                }
+            }
+        } finally {
+            if (is_file($tmpPsd)) {
+                @unlink($tmpPsd);
+            }
+            if (is_file($tmpJpg)) {
+                @unlink($tmpJpg);
+            }
+        }
+    }
+
+    private function downloadFileContent(string $dropboxPath): string
+    {
         $apiArg = json_encode([
             'url' => $this->sharedLinkUrl,
             'path' => $this->sharedLinkDownloadPath($dropboxPath),
@@ -212,11 +347,7 @@ class DropboxSharedFolderSync
             throw new RuntimeException((string) $summary);
         }
 
-        $written = file_put_contents($localPath, $response->body());
-
-        if ($written === false) {
-            throw new RuntimeException('Impossibile scrivere il file locale.');
-        }
+        return (string) $response->body();
     }
 
     private function ensureTargetDirectory(): void
@@ -347,6 +478,17 @@ class DropboxSharedFolderSync
         $filename = basename($relativePath);
 
         if ($this->imagesSubdirectory && $this->isImageFile($filename)) {
+            return rtrim($this->targetPath, '/').'/'.$this->imagesSubdirectory.'/'.$filename;
+        }
+
+        return rtrim($this->targetPath, '/').'/'.$filename;
+    }
+
+    private function localPathForConvertedImage(string $relativePath, string $targetExtension): string
+    {
+        $filename = pathinfo(basename($relativePath), PATHINFO_FILENAME).'.'.$targetExtension;
+
+        if ($this->imagesSubdirectory) {
             return rtrim($this->targetPath, '/').'/'.$this->imagesSubdirectory.'/'.$filename;
         }
 

@@ -17,6 +17,7 @@
 /public/hot
 /public/h/*
 !/public/h/.gitkeep
+/public/h/internal/dropbox-sync*
 /public/k
 /public/storage
 /storage/*.key

@@ -447,8 +447,13 @@ class CheckoutController extends Controller
     /**
      * Redirect automatico verso PayPal dopo la creazione dell'ordine.
      */
-    public function paypalRedirect(Order $order, PayPalService $payPal)
+    public function paypalRedirect(PayPalService $payPal)
     {
+        $order = request()->route('order');
+        if (! $order instanceof Order) {
+            $order = Order::findOrFail($order);
+        }
+
         if (! $this->canAccessOrder($order) || $order->pagamento !== 'paypal') {
             abort(403);
         }
@@ -468,8 +473,13 @@ class CheckoutController extends Controller
     /**
      * Step finale: pagina di ringraziamento / esito.
      */
-    public function thankYou(Order $order)
+    public function thankYou()
     {
+        $order = request()->route('order');
+        if (! $order instanceof Order) {
+            $order = Order::findOrFail($order);
+        }
+
         if (! $this->canAccessOrder($order)) {
             abort(403);
         }

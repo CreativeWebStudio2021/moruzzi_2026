@@ -10,9 +10,10 @@ Artisan::command('inspire', function () {
 
 Schedule::command('carts:abandon-expired')->hourly();
 
+// Sync Dropbox → HTML locali + immagini su R2 (notturna; anche manuale: php artisan dropbox:sync-h)
 Schedule::command('dropbox:sync-h')
-    ->everyFifteenMinutes()
-    ->withoutOverlapping(30)
+    ->dailyAt('02:30')
+    ->withoutOverlapping(120)
     ->appendOutputTo(storage_path('logs/schedule-dropbox.log'))
     ->when(fn () => filled(config('dropbox_sync.shared_link_url'))
         && (filled(config('dropbox_sync.access_token')) || filled(config('dropbox_sync.refresh_token'))));
