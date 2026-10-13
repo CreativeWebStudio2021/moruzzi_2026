@@ -404,6 +404,36 @@ return [
         ],
     ],
 
+    'product_certificate' => [
+        'title' => 'Das angeforderte Zertifikat',
+        'lead' => 'Online-Zertifikat Moruzzi Numismatica',
+        'image_alt' => 'Zertifikatsbild für Produkt :sku',
+        'view_product' => 'Zur Produktseite',
+        'download_pdf' => 'PDF-Zertifikat herunterladen',
+        'verify_blockchain' => 'Notarisierung prüfen',
+        'notarized_label' => 'Dokument auf der Blockchain notariert — Hash:',
+        'sku_label' => 'Art.-Nr.',
+        'copyright' => 'Jeder individuelle Ausdruck ist anders und persönlich, entsprechend der eigenen Denkweise. Eine große Menge intellektueller Werke, insbesondere im Internet, wird allen kostenlos zur Verfügung gestellt. Es dürfen jedoch die moralischen und rechtlichen Pflichten nicht vergessen werden, die Urheberschaft zu respektieren und Kreationen nicht ohne Zustimmung der Urheber zu reproduzieren. Copyright Moruzzi Numismatica © 1999-:year',
+    ],
+
+    'verify' => [
+        'title' => 'Prüfung der Notarisierung',
+        'lead' => 'Geben Sie den SHA-256-Hash des PDF-Zertifikats (oder die Transaktions-ID) ein, um zu prüfen, ob es unter den notarierten Moruzzi-Dokumenten ist. Sie können auch das Ylium-Portal nutzen und die PDF-Datei hochladen.',
+        'hash_label' => 'Document hash / transaction id',
+        'submit' => 'In Moruzzi-Register suchen',
+        'open_ylium' => 'Ylium-Verifizierung öffnen',
+        'found' => 'Dokument im Moruzzi-Zertifikatsregister gefunden.',
+        'not_found' => 'Kein Moruzzi-Zertifikat entspricht diesem Hash.',
+        'not_found_hint' => 'Wenn Sie die PDF haben, prüfen Sie sie auch auf Ylium: die On-Chain-Notarisierung ist unabhängig von unserem Archiv.',
+        'access_code' => 'Zugangscode',
+        'document_hash' => 'Dokument-Hash',
+        'notarized_at' => 'Notariert am',
+        'pdf_ready_not_notarized' => 'PDF im Archiv vorhanden, aber die Blockchain-Notarisierung ist noch nicht registriert.',
+        'open_certificate' => 'Online-Zertifikat öffnen',
+        'download_pdf' => 'PDF herunterladen',
+        'ylium_embed_lead' => 'Direkte Prüfung auf Ylium (Datei hochladen oder Hash/Tx eingeben):',
+    ],
+
     'cataloguing' => [
         'title' => 'Katalogisierung von Münzen und Banknoten',
         'appointment' => true,

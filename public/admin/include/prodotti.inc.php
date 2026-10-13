@@ -430,6 +430,7 @@ if($azione=="cancella_sel") {
 					<th style="width:50px;">In evidenza</th>
 					<th style="width:50px;">OFFERTA</th>
 					<th style="width:50px;">Novità</th>
+					<th style="width:50px;">Cert.</th>
 					<th style="text-align:left;">Azioni</th>
 				</tr>
 			</thead>
@@ -463,11 +464,38 @@ if($azione=="cancella_sel") {
 						$risu_ele->bindValue($index + 1, $val, PDO::PARAM_STR);
 					}
 					$risu_ele->execute();
-					$num_item=$risu_ele->rowCount();	
-					
+					$num_item=$risu_ele->rowCount();
+
+					$rows = [];
+					$pageIds = [];
+					for ($x = 0; $x < $num_item; $x++) {
+						$arr_ele = $risu_ele->fetch(PDO::FETCH_ASSOC);
+						if (! $arr_ele) {
+							continue;
+						}
+						$rows[] = $arr_ele;
+						$pageIds[] = (int) $arr_ele['entity_id'];
+					}
+
+					$certifiedMap = [];
+					if ($pageIds !== []) {
+						try {
+							$certs = \App\Models\ProductCertificate::query()
+								->whereIn('product_id', $pageIds)
+								->where('published', true)
+								->get(['product_id', 'access_code']);
+							foreach ($certs as $certRow) {
+								$certifiedMap[(int) $certRow->product_id] = (string) $certRow->access_code;
+							}
+						} catch (Throwable $e) {
+							$certifiedMap = [];
+						}
+					}
+
+					$num_item = count($rows);
 					for($x=0;$x<$num_item;$x++)
 					{		
-						$arr_ele = $risu_ele->fetch();
+						$arr_ele = $rows[$x];
 						$nome = ucfirst($arr_ele['name']);
 						$id_campo = $arr_ele['entity_id'];
 						$img = $arr_ele['image'];
@@ -486,6 +514,8 @@ if($azione=="cancella_sel") {
 						if(str_contains($categorie, '@969@')) $offerta = 1;
 						
 						$novita = $arr_ele['novita'];
+						$isCertified = isset($certifiedMap[(int) $id_campo]);
+						$certAccessCode = $isCertified ? $certifiedMap[(int) $id_campo] : '';
 												
 						$link_prod="";		
 			?>
@@ -607,6 +637,27 @@ if($azione=="cancella_sel") {
 							</div>
 						</a>
 					</td>
+					<td align="center" valign="center">
+						<a style="cursor:pointer" title="<?php echo $isCertified ? 'Certificato: '.$certAccessCode : 'Crea certificato online'; ?>"
+						   onclick="openProductCertificate(<?php echo (int) $id_campo; ?>)">
+							<div style="width:30px; height:30px" id="certificato_<?php echo $id_campo;?>">
+								<?php if ($isCertified) { ?>
+									<i class="fa-solid fa-certificate fa-2x" style="color:#99D000"></i>
+								<?php } else { ?>
+									<i class="fa-solid fa-certificate fa-2x" style="color:#bbb"></i>
+								<?php } ?>
+							</div>
+						</a>
+						<?php if ($isCertified) { ?>
+							<div style="margin-top:4px; font-size:10px;">
+								<a href="<?php echo htmlspecialchars($http.'://'.$ind_sito.'/h/'.$certAccessCode.'.html', ENT_QUOTES, 'UTF-8'); ?>"
+								   target="_blank" rel="noopener" id="cert_url_<?php echo (int) $id_campo; ?>"
+								   title="Apri pagina pubblica"><?php echo htmlspecialchars($certAccessCode, ENT_QUOTES, 'UTF-8'); ?></a>
+							</div>
+						<?php } else { ?>
+							<div style="margin-top:4px; font-size:10px;" id="cert_url_wrap_<?php echo (int) $id_campo; ?>"></div>
+						<?php } ?>
+					</td>
 					<td style="width:10%">
 						<span class="btn-group">
 							<?php /*<a href="admin.php?cmd=<?php echo $pagina;?>&id_canc=<?php  echo $id_campo; ?>&azione=primo<?php echo $rif;?>&pag_att=<?php echo $pag_att;?>" class="btn btn-small"><i class="icon-arrow-up-2"></i></a>
@@ -687,5 +738,23 @@ if($azione=="cancella_sel") {
 	}
 	
 	$("#hiddenFrame").attr("src", "frame/novitaProdotti.php?id_prod="+id);
+  }
+
+  function openProductCertificate(id) {
+	document.getElementById('framePage').src = 'frame/product_certificate.php?id_prod=' + id;
+	$('#mask').fadeIn();
+  }
+
+  function markProductCertified(id, url, accessCode) {
+	$('#certificato_' + id).html('<i class="fa-solid fa-certificate fa-2x" style="color:#99D000"></i>');
+	var wrap = $('#cert_url_wrap_' + id);
+	if (wrap.length) {
+		wrap.html('<a href="' + url + '" target="_blank" rel="noopener" id="cert_url_' + id + '" title="Apri pagina pubblica">' + (accessCode || '') + '</a>');
+	} else {
+		var link = $('#cert_url_' + id);
+		if (link.length) {
+			link.attr('href', url).text(accessCode || '');
+		}
+	}
   }
 </script>

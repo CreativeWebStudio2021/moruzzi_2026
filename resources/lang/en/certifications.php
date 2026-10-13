@@ -404,6 +404,36 @@ return [
         ],
     ],
 
+    'product_certificate' => [
+        'title' => 'Your requested certificate',
+        'lead' => 'Moruzzi Numismatica online certificate',
+        'image_alt' => 'Certificate image for product :sku',
+        'view_product' => 'View product page',
+        'download_pdf' => 'Download PDF certificate',
+        'verify_blockchain' => 'Verify notarization',
+        'notarized_label' => 'Document notarized on blockchain — hash:',
+        'sku_label' => 'Item code',
+        'copyright' => 'Each individual expression is different and personal, according to their own way of thinking. A large amount of intellectual works, especially on the internet, are made freely available to everyone. However, moral and legal obligations to respect authorship and not reproduce creations without consent must not be forgotten. Copyright Moruzzi Numismatica © 1999-:year',
+    ],
+
+    'verify' => [
+        'title' => 'Notarization verification',
+        'lead' => 'Enter the SHA-256 hash of the PDF certificate (or the transaction id) to check if it is among Moruzzi notarized documents. You can also use the Ylium portal by uploading the PDF file.',
+        'hash_label' => 'Document hash / transaction id',
+        'submit' => 'Search Moruzzi registry',
+        'open_ylium' => 'Open Ylium verify',
+        'found' => 'Document found in the Moruzzi certificate registry.',
+        'not_found' => 'No Moruzzi certificate matches this hash.',
+        'not_found_hint' => 'If you have the PDF, verify it on Ylium anyway: on-chain notarization is independent from our archive.',
+        'access_code' => 'Access code',
+        'document_hash' => 'Document hash',
+        'notarized_at' => 'Notarized on',
+        'pdf_ready_not_notarized' => 'PDF is in the archive, but blockchain notarization is not registered yet.',
+        'open_certificate' => 'Open online certificate',
+        'download_pdf' => 'Download PDF',
+        'ylium_embed_lead' => 'Direct verification on Ylium (upload the file or enter hash/tx):',
+    ],
+
     'cataloguing' => [
         'title' => 'Coin and banknote cataloguing',
         'appointment' => true,

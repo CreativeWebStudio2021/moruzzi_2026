@@ -11,6 +11,7 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\PayPalController;
+use App\Http\Controllers\ProductCertificateController;
 use App\Http\Controllers\SiteAnnouncementController;
 use App\Support\GuideRegistry;
 
@@ -40,6 +41,17 @@ Route::match(['get', 'post'], '/paypal/response', [PayPalController::class, 'ret
 
 Route::get('/internal/dropbox-sync', \App\Http\Controllers\DropboxSyncController::class)
     ->name('dropbox.sync.webhook');
+
+Route::get('/h/verifica.html', [ProductCertificateController::class, 'verify'])
+    ->name('product_certificate.verify');
+
+Route::get('/h/{code}.html', [ProductCertificateController::class, 'show'])
+    ->where('code', '[A-Za-z][0-9]+')
+    ->name('product_certificate.show');
+
+Route::get('/h/{code}.pdf', [ProductCertificateController::class, 'downloadPdf'])
+    ->where('code', '[A-Za-z][0-9]+')
+    ->name('product_certificate.pdf');
 
 /*
 |--------------------------------------------------------------------------

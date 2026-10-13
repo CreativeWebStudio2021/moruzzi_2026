@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use App\Jobs\AutoNotarizeProductCertificateJob;
+use App\Services\ProductCertificateService;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
@@ -17,3 +19,9 @@ Schedule::command('dropbox:sync-h')
     ->appendOutputTo(storage_path('logs/schedule-dropbox.log'))
     ->when(fn () => filled(config('dropbox_sync.shared_link_url'))
         && (filled(config('dropbox_sync.access_token')) || filled(config('dropbox_sync.refresh_token'))));
+
+Artisan::command('certificates:auto-notarize {certificateId}', function (int $certificateId) {
+    $service = app(ProductCertificateService::class);
+    $job = new AutoNotarizeProductCertificateJob($certificateId);
+    $job->handle($service);
+})->purpose('Notarize product certificate in background (custodial)');

@@ -404,6 +404,36 @@ return [
         ],
     ],
 
+    'product_certificate' => [
+        'title' => 'Il certificato che hai richiesto',
+        'lead' => 'Certificato online Moruzzi Numismatica',
+        'image_alt' => 'Immagine certificato prodotto :sku',
+        'view_product' => 'Vai alla scheda prodotto',
+        'download_pdf' => 'Scarica certificato PDF',
+        'verify_blockchain' => 'Verifica notarizzazione',
+        'notarized_label' => 'Documento notarizzato su blockchain — hash:',
+        'sku_label' => 'Codice art.',
+        'copyright' => 'Ciascuna espressione di ogni individuo è differente e personale, secondo la logica del proprio pensiero. Una grande quantità di produzioni intellettuali, in modo particolare in internet, vengono messe gratuitamente a disposizione di tutti. Non va però dimenticato che ci sono obblighi morali e legali di rispettare la paternità delle creazioni e di non replicarle, senza il consenso di chi le ha realizzate. Copyright Moruzzi Numismatica © 1999-:year',
+    ],
+
+    'verify' => [
+        'title' => 'Verifica notarizzazione',
+        'lead' => 'Inserisci l’hash SHA-256 del certificato PDF (o la transaction id) per verificare se risulta tra i documenti notarizzati Moruzzi. Puoi anche usare il portale Ylium caricando il file PDF.',
+        'hash_label' => 'Document hash / transaction id',
+        'submit' => 'Cerca nel registro Moruzzi',
+        'open_ylium' => 'Apri verifica Ylium',
+        'found' => 'Documento trovato nel registro certificati Moruzzi.',
+        'not_found' => 'Nessun certificato Moruzzi corrisponde a questo hash.',
+        'not_found_hint' => 'Se hai il PDF, verifica comunque su Ylium: la notarizzazione on-chain è indipendente dal nostro archivio.',
+        'access_code' => 'Codice accesso',
+        'document_hash' => 'Hash documento',
+        'notarized_at' => 'Notarizzato il',
+        'pdf_ready_not_notarized' => 'PDF presente in archivio, ma la notarizzazione blockchain non risulta ancora registrata.',
+        'open_certificate' => 'Apri certificato online',
+        'download_pdf' => 'Scarica PDF',
+        'ylium_embed_lead' => 'Verifica diretta su Ylium (carica il file o inserisci hash/tx):',
+    ],
+
     'cataloguing' => [
         'title' => 'Catalogazioni di monete e banconote',
         'appointment' => true,
