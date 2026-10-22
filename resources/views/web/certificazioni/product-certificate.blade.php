@@ -29,6 +29,7 @@
         padding: 40px 30px;
         margin: 50px;
         gap: 16px;
+        font-family: 'Inria Sans', sans-serif;
     }
 
     .certificate-left-title {
@@ -51,12 +52,14 @@
     }
 
     .certificate-content {
+        font-family: 'Inria Sans', sans-serif;
         font-size: 17px;
         line-height: 1.7;
         color: var(--blackLight, #333);
     }
 
     .certificate-body {
+        font-family: 'Inria Sans', sans-serif;
         text-align: justify;
         margin-bottom: 28px;
     }
@@ -92,10 +95,25 @@
         min-width: 12px;
     }
 
-    .certificate-actions-primary .morButton {
+    .certificate-actions-primary .morButton,
+    .certificate-actions-secondary .morButton {
         min-width: 220px;
+        width: auto;
+        margin: 0;
         text-align: center;
         flex: 0 0 auto;
+        white-space: nowrap;
+        font-family: 'Inria Sans', sans-serif;
+    }
+
+    .certificate-actions-primary .morButtonTxt,
+    .certificate-actions-secondary .morButtonTxt {
+        font-family: 'Inria Sans', sans-serif;
+        font-weight: 400;
+        white-space: nowrap;
+        height: auto;
+        padding-bottom: 0;
+        line-height: 1.25;
     }
 
     .certificate-actions-primary .certificate-btn-verify {
@@ -118,12 +136,14 @@
 
     .certificate-copyright {
         margin-top: 28px;
+        font-family: 'Inria Serif', serif;
         font-size: 13px;
         color: #666;
         text-align: justify;
     }
 
     .certificate-meta {
+        font-family: 'Inria Sans', sans-serif;
         font-size: 14px;
         color: #666;
         margin-bottom: 18px;
@@ -208,7 +228,7 @@
             @if($certificate->pdf_filename || $certificate->hasVerifyAction())
                 <div class="certificate-actions-primary{{ ($certificate->pdf_filename && $certificate->hasVerifyAction()) ? '' : ' certificate-actions-primary--verify-only' }}">
                     @if($certificate->pdf_filename)
-                        <a href="{{ route('product_certificate.pdf', ['code' => $certificate->access_code]) }}" class="morButton morButton2" target="_blank" rel="noopener">
+                        <a href="{{ route('product_certificate.pdf', ['code' => $certificate->access_code]) }}" class="morButton morButton2 morButtonFit" target="_blank" rel="noopener">
                             <span class="morButtonTxt">{{ __('certifications.product_certificate.download_pdf') }}</span>
                         </a>
                     @endif
@@ -220,7 +240,7 @@
                     @if($certificate->hasVerifyAction() && $certificate->verifyUrl())
                         <a
                             href="{{ $certificate->verifyUrl() }}"
-                            class="morButton certificate-btn-verify"
+                            class="morButton morButtonFit certificate-btn-verify"
                         >
                             <span class="morButtonTxt">{{ __('certifications.product_certificate.verify_blockchain') }}</span>
                         </a>
@@ -230,7 +250,7 @@
 
             @if($productAvailable && $product)
                 <div class="certificate-actions-secondary">
-                    <a href="{{ $product->url }}" class="morButton">
+                    <a href="{{ $product->url }}" class="morButton morButtonFit">
                         <span class="morButtonTxt">{{ __('certifications.product_certificate.view_product') }}</span>
                     </a>
                 </div>
