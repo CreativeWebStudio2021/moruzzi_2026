@@ -159,6 +159,9 @@
 				<a href="https://it.pinterest.com/moruzzinumismatica/" target="_blank" rel="noopener" title="Pinterest" style="color:#fff; opacity:0.9;">
 					<x-icon name="pinterest" class="footer-socialItem"/>
 				</a>
+				<a href="https://it.linkedin.com/company/moruzzi-numismatica" target="_blank" rel="noopener" title="LinkedIn" style="color:#fff; opacity:0.9;">
+					<x-icon name="linkedin" class="footer-socialItem"/>
+				</a>
 				<a href="https://whatsapp.com/channel/0029Vb67PHi8qIzvmq7jS93x" target="_blank" rel="noopener" title="WhatsApp" style="color:#fff; opacity:0.9;">
 					<x-icon name="whatsapp" class="footer-socialItem"/>
 				</a>
