@@ -132,6 +132,12 @@
 				<a href="https://www.instagram.com/moruzzi_numismatica/?hl=it" target="_blank" title="">
 					<x-icon name="instagram" class="socialItem"/>			
 				</a>
+				<a href="https://www.youtube.com/@MORUZZINUMISMATICARoma" target="_blank" rel="noopener" title="YouTube">
+					<x-icon name="youtube" class="socialItem"/>
+				</a>
+				<a href="https://it.pinterest.com/moruzzinumismatica/" target="_blank" rel="noopener" title="Pinterest">
+					<x-icon name="pinterest" class="socialItem"/>
+				</a>
 				<a href="https://whatsapp.com/channel/0029Vb67PHi8qIzvmq7jS93x" target="_blank" title="">
 					<x-icon name="whatsapp" class="socialItem"/>
 				</a>
