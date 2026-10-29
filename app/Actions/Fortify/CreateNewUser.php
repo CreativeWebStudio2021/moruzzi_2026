@@ -3,7 +3,9 @@
 namespace App\Actions\Fortify;
 
 use App\Models\Customer;
+use App\Rules\TurnstileToken;
 use App\Services\RegistrationNotificationService;
+use App\Services\TurnstileService;
 use App\Support\RegistrationBlocklist;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -37,6 +39,10 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $this->passwordRules(),
             'privacy' => ['accepted'],
             'newsletter' => ['nullable', 'boolean'],
+            'cf-turnstile-response' => array_values(array_filter([
+                app(TurnstileService::class)->isEnabled() ? 'required' : null,
+                new TurnstileToken,
+            ])),
         ])->validate();
 
         if (RegistrationBlocklist::matches(

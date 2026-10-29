@@ -6,6 +6,7 @@ return [
     ],
 
     'unique' => 'El campo :attribute ya está registrado.',
+    'turnstile' => 'La verificación de seguridad no se ha completado. Inténtelo de nuevo.',
 
     'attributes' => [
         'email'    => 'correo electrónico',

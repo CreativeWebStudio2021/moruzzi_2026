@@ -207,6 +207,7 @@
 					@enderror
 				</div>
 				@include('web.common.form-required-note')
+				@include('web.common.turnstile', ['action' => 'newsletter'])
 				<div class="form-group">
 					<button type="submit" class="btn-subscribe">{{ __('newsletter.submit') }}</button>
 				</div>

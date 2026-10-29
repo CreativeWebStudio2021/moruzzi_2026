@@ -6,6 +6,7 @@ return [
     ],
 
     'unique' => 'Das Feld :attribute ist bereits vergeben.',
+    'turnstile' => 'Sicherheitsprüfung fehlgeschlagen. Bitte erneut versuchen.',
 
     'attributes' => [
         'email'    => 'E-Mail-Adresse',

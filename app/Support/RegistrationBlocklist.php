@@ -5,12 +5,22 @@ namespace App\Support;
 class RegistrationBlocklist
 {
     /**
-     * Blocca se il nome è Giulio+Cameli oppure l'email è una variante giuliocameli/cameligiulio.
+     * Blocca se:
+     * - nome/cognome sono Test+Test (spam bot), oppure
+     * - nome è Giulio+Cameli, oppure
+     * - email è una variante giuliocameli/cameligiulio.
      */
     public static function matches(string $nome, string $cognome, string $email): bool
     {
-        return self::isCameliGiulioName($nome, $cognome)
+        return self::isTestTestName($nome, $cognome)
+            || self::isCameliGiulioName($nome, $cognome)
             || self::isBlockedEmail($email);
+    }
+
+    public static function isTestTestName(string $nome, string $cognome): bool
+    {
+        return self::normalizePersonToken($nome) === 'test'
+            && self::normalizePersonToken($cognome) === 'test';
     }
 
     public static function isCameliGiulioName(string $nome, string $cognome): bool

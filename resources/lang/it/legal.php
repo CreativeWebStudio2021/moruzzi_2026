@@ -98,6 +98,7 @@ return [
                     'Brevo (Sendinblue) per la gestione della newsletter, ove l\'utente abbia prestato consenso (<a href="https://www.brevo.com/it/legal/privacypolicy/" target="_blank" rel="noopener">informativa privacy Brevo</a>);',
                     'Iubenda S.r.l. per la gestione del consenso cookie tramite banner (<a href="https://www.iubenda.com/privacy-policy/946454" target="_blank" rel="noopener">privacy policy Iubenda</a>);',
                     'Google Ireland Limited per servizi di analisi e tracciamento erogati tramite Google Tag Manager, attivati solo previo consenso tramite la soluzione cookie Iubenda (<a href="https://policies.google.com/privacy" target="_blank" rel="noopener">informativa privacy Google</a>);',
+                    'Cloudflare, Inc. per la protezione dei form da traffico automatizzato abusivo tramite il servizio Turnstile (modalità invisibile). Cloudflare tratta segnali tecnici strettamente necessari (ad es. indirizzo IP, fingerprint TLS, User-Agent, sitekey/origine) al solo fine di distinguere utenti umani da bot, come descritto nell\'<a href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank" rel="noopener">Addendum privacy di Turnstile</a> e nella <a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">privacy policy di Cloudflare</a>;',
                     'consulenti contabili, legali e altri professionisti incaricati dal Titolare;',
                     'autorità pubbliche ove previsto dalla legge.',
                 ],
@@ -124,7 +125,7 @@ return [
                 ],
             ],
         ],
-        'footnote' => 'Ultimo aggiornamento: giugno 2026.',
+        'footnote' => 'Ultimo aggiornamento: ottobre 2026.',
     ],
 
     'cookie_policy' => [
@@ -152,6 +153,7 @@ return [
                             'cookie di sessione Laravel (es. identificativo di sessione, token CSRF);',
                             'cookie <code>moruzzi_cart_session</code> per il carrello degli utenti non registrati;',
                             'cookie e preferenze tecniche del negozio (lingua, area cliente, checkout);',
+                            'segnali/cookie tecnici di Cloudflare Turnstile, strettamente necessari alla protezione anti-bot dei form (registrazione, newsletter), senza finalità di profilazione pubblicitaria (<a href="https://www.cloudflare.com/turnstile-privacy-policy/" target="_blank" rel="noopener">Addendum privacy Turnstile</a>);',
                         ],
                     ],
                     [
@@ -198,6 +200,6 @@ return [
                 ],
             ],
         ],
-        'footnote' => 'Ultimo aggiornamento: giugno 2026.',
+        'footnote' => 'Ultimo aggiornamento: ottobre 2026.',
     ],
 ];

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Mail\NewsletterSubscriptionMail;
+use App\Rules\TurnstileToken;
 use App\Services\NewsletterSubscriptionService;
+use App\Services\TurnstileService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -23,8 +25,13 @@ class NewsletterController extends Controller
     {
         $request->validate([
             'subscriber_email' => ['required', 'email'],
+            'cf-turnstile-response' => array_values(array_filter([
+                app(TurnstileService::class)->isEnabled() ? 'required' : null,
+                new TurnstileToken,
+            ])),
         ], [], [
             'subscriber_email' => __('newsletter.email'),
+            'cf-turnstile-response' => 'Turnstile',
         ]);
 
         $email = strtolower(trim($request->input('subscriber_email')));

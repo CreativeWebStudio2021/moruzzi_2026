@@ -20,6 +20,7 @@ return [
 
     'current_password' => 'La password attuale non è corretta.',
     'confirmed'        => 'La conferma della :attribute non coincide.',
+    'turnstile'        => 'Verifica di sicurezza non riuscita. Riprova.',
 
     'attributes' => [
         'email'             => 'email',

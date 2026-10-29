@@ -207,6 +207,7 @@
                     @enderror
 
                     @include('web.common.form-required-note')
+                    @include('web.common.turnstile', ['action' => 'register'])
 
                     <div style="margin-top:35px; display:flex; justify-content:flex-end;">
                         <button type="submit" class="morButton morButton2" style="width:160px; border:none;">

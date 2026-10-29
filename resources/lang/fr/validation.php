@@ -6,6 +6,7 @@ return [
     ],
 
     'unique' => 'Le champ :attribute est déjà utilisé.',
+    'turnstile' => 'La vérification de sécurité a échoué. Veuillez réessayer.',
 
     'attributes' => [
         'email'    => 'adresse e-mail',

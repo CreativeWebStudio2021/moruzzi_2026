@@ -6,6 +6,7 @@ return [
     ],
 
     'unique' => 'The :attribute has already been taken.',
+    'turnstile' => 'Security verification failed. Please try again.',
 
     'attributes' => [
         'email'    => 'email address',
