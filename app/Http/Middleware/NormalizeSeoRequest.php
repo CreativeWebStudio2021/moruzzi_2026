@@ -18,39 +18,39 @@ class NormalizeSeoRequest
         }
 
         $path = $request->getPathInfo(); // inizia con /
-
-        // Trailing slash (eccetto root)
-        if ($path !== '/' && str_ends_with($path, '/')) {
-            $target = rtrim($path, '/') ?: '/';
-            $qs = $request->getQueryString();
-
-            return redirect()->to($target.($qs ? '?'.$qs : ''), 301);
-        }
+        $hadTrailingSlash = ($path !== '/' && str_ends_with($path, '/'));
+        $normalizedPath = $hadTrailingSlash ? (rtrim($path, '/') ?: '/') : $path;
 
         $locale = 'it';
-        $rest = ltrim($path, '/');
+        $rest = ltrim($normalizedPath, '/');
         if (preg_match('#^(en|fr|de|es)(/|$)#', $rest, $m)) {
             $locale = $m[1];
             $rest = substr($rest, strlen($m[1]));
             $rest = ltrim((string) $rest, '/');
         }
 
-        // Le chiavi in config/localized_slugs.php sono letterali tipo "catalog.index"
-        // (il punto NON è nesting Laravel).
+        // Chiavi letterali "catalog.index" in config/localized_slugs.php
         $catalogSlugs = (array) (config('localized_slugs')['catalog.index'] ?? []);
         $canonicalCatalog = (string) ($catalogSlugs[$locale] ?? 'catalogo');
         $catalogAliases = array_values(array_unique(array_filter(
             array_map('strval', array_values($catalogSlugs))
         )));
 
-        // Solo index catalogo esatto (non /catalogo/search)
+        $qs = $request->getQueryString();
+        $qsSuffix = $qs ? '?'.$qs : '';
+
+        // Alias catalogo → slug canonico (eventuale slash assorbito nello stesso 301)
         if (in_array($rest, $catalogAliases, true) && $rest !== $canonicalCatalog) {
             $prefix = $locale === 'it' ? '' : $locale.'/';
-            $qs = $request->getQueryString();
             $target = '/'.$prefix.$canonicalCatalog;
             $target = preg_replace('#/+#', '/', $target) ?: '/';
 
-            return redirect()->to($target.($qs ? '?'.$qs : ''), 301);
+            return redirect()->to($target.$qsSuffix, 301);
+        }
+
+        // Solo strip slash (nessun alias da applicare)
+        if ($hadTrailingSlash) {
+            return redirect()->to($normalizedPath.$qsSuffix, 301);
         }
 
         return $next($request);

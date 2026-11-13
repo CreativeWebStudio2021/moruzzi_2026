@@ -80,18 +80,22 @@ class RedirectLegacyWww
         $relative = null;
         $anchor = null;
 
+        $targetLocale = $locale;
+
         if (isset($files[$key])) {
             $rule = $files[$key];
             $anchor = $rule['anchor'] ?? null;
-            $relative = $this->relativePathFromRule($rule, $locale);
+            [$relative, $targetLocale] = $this->relativePathFromRule($rule, $locale);
         }
 
         if ($relative === null) {
             $relative = LegacyCategoryRedirectResolver::resolve($key, $locale);
+            $targetLocale = $locale;
         }
 
         if ($relative === null && ! str_contains($path, '/')) {
             $relative = LegacyEditorialRedirectResolver::resolve($key, $locale);
+            $targetLocale = $locale;
         }
 
         if ($relative === null) {
@@ -100,9 +104,9 @@ class RedirectLegacyWww
 
         $url = $relative === ''
             ? url('/')
-            : ($locale === 'it'
+            : ($targetLocale === 'it'
                 ? url('/'.$relative)
-                : url('/'.$locale.'/'.$relative));
+                : url('/'.$targetLocale.'/'.$relative));
 
         if ($anchor) {
             $url .= '#'.$anchor;
@@ -122,24 +126,35 @@ class RedirectLegacyWww
 
     /**
      * @param  array<string, mixed>  $rule
+     * @return array{0: ?string, 1: string} [path relativo, locale da usare nel prefisso]
      */
-    private function relativePathFromRule(array $rule, string $locale): ?string
+    private function relativePathFromRule(array $rule, string $locale): array
     {
-        if (isset($rule['paths'][$locale])) {
-            return ltrim((string) $rule['paths'][$locale], '/');
+        if (! empty($rule['paths'][$locale])) {
+            return [ltrim((string) $rule['paths'][$locale], '/'), $locale];
         }
 
-        if (isset($rule['path'])) {
-            return ltrim((string) $rule['path'], '/');
+        if (! empty($rule['path'])) {
+            return [ltrim((string) $rule['path'], '/'), $locale];
         }
 
         if (isset($rule['route'])) {
             $slugs = config('localized_slugs', []);
+            $path = ltrim((string) ($slugs[$rule['route']][$locale] ?? $slugs[$rule['route']]['it'] ?? ''), '/');
 
-            return ltrim((string) ($slugs[$rule['route']][$locale] ?? $slugs[$rule['route']]['it'] ?? ''), '/');
+            return [$path !== '' ? $path : null, $locale];
         }
 
-        return null;
+        // Fallback: usa la prima lingua disponibile nella regola (evita 404 su mappe mono-lingua)
+        if (! empty($rule['paths']) && is_array($rule['paths'])) {
+            foreach (['it', 'en', 'es', 'fr', 'de'] as $fallbackLocale) {
+                if (! empty($rule['paths'][$fallbackLocale])) {
+                    return [ltrim((string) $rule['paths'][$fallbackLocale], '/'), $fallbackLocale];
+                }
+            }
+        }
+
+        return [null, $locale];
     }
 
     private function isSameRequestPath(Request $request, string $targetUrl): bool

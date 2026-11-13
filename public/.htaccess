@@ -23,6 +23,14 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
+    # Alias catalogo (con o senza slash) → slug canonico in UN solo 301
+    # Prima dello strip slash generico, altrimenti si crea una catena di 2 redirect.
+    RewriteRule ^(catalog|catalogue|katalog)/?$ /catalogo [R=301,L]
+    RewriteRule ^en/(catalogo|catalogue|katalog)/?$ /en/catalog [R=301,L]
+    RewriteRule ^fr/(catalogo|catalog|katalog)/?$ /fr/catalogue [R=301,L]
+    RewriteRule ^de/(catalogo|catalog|catalogue)/?$ /de/katalog [R=301,L]
+    RewriteRule ^es/(catalog|catalogue|katalog)/?$ /es/catalogo [R=301,L]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$

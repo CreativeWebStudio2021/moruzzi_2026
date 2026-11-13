@@ -36,7 +36,7 @@ return [
   'monete-di-cleopatra-vii.html' => 'monete/monete-romane-repubblicane/monete-delle-guerre-civili/monete-di-marco-antonio.html',
   'monete-di-clodio-albino.html' => 'monete/monete-dell-impero-romano/coniazioni-di-pescennio-nigro-e-clodio-albino.html',
   'monete-di-commodo.html' => 'monete/monete-dell-impero-romano/coniazioni-sotto-commodo.html',
-  'monete-di-corinto--gli-stateri--pegasi-.html' => 'monete/monete-greche/grecia-e-mondo-greco/stateri-di-corinto-pegasi.html',
+  'monete-di-corinto--gli-stateri--pegasi-.html' => 'monete/monete-greche/grecia-e-mondo-greco/stateri-di-corinto-(pegasi).html',
   'monete-di-cornelia-supera.html' => 'monete/monete-dell-impero-romano/coniazioni-sotto-emiliano.html',
   'monete-di-costantino-ii.html' => 'monete/monete-dell-impero-romano/coniazioni-della-famiglia-di-costantino.html',
   'monete-di-costantino.html' => 'monete/monete-dell-impero-romano/coniazioni-della-famiglia-di-costantino.html',

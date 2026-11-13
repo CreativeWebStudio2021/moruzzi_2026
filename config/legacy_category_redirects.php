@@ -687,7 +687,7 @@ return [
   array (
     'paths' => 
     array (
-      'it' => 'monete/monete-greche/grecia-e-mondo-greco/stateri-di-corinto-pegasi.html',
+      'it' => 'monete/monete-greche/grecia-e-mondo-greco/stateri-di-corinto-(pegasi).html',
     ),
   ),
   'monete-di-cornelia-supera.html' => 
