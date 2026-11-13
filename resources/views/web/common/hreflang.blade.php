@@ -1,4 +1,7 @@
-@if(!empty($alternateUrls) && is_array($alternateUrls))
+{{-- Canonical/hreflang emessi dal layout via PageSeoService.
+     Questo partial resta per compatibilità: popola seoAlternates se il composer
+     non li ha ancora visti (stack meta dopo il composer). --}}
+@if(!empty($alternateUrls) && is_array($alternateUrls) && empty($seoAlternates))
 	@php
 		$canonicalUrl = $alternateUrls[app()->getLocale()] ?? ($alternateUrls['it'] ?? reset($alternateUrls));
 	@endphp

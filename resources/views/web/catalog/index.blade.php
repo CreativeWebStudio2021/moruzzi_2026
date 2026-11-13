@@ -3,21 +3,17 @@
 @push('meta')
 	@php
 		$catalogJsonLdGraphs = [];
-		$catalogAlternateUrls = [];
-		if (!empty($category)) {
-			foreach (['it', 'en', 'es', 'fr', 'de'] as $catLocale) {
-				$catalogAlternateUrls[$catLocale] = category_url((int) $category->entity_id, $catLocale);
-			}
+		$catalogAlternateUrls = $catalogAlternateUrls ?? [];
+		if (!empty($category) && !empty($catalogAlternateUrls)) {
 			$breadcrumbSchema = app(\App\Services\Seo\BreadcrumbJsonLdBuilder::class)->build(
 				$breadcrumb ?? [],
-				$catalogAlternateUrls[app()->getLocale()] ?? null
+				$catalogAlternateUrls[app()->getLocale()] ?? ($catalogAlternateUrls['it'] ?? null)
 			);
 			if ($breadcrumbSchema) {
 				$catalogJsonLdGraphs[] = $breadcrumbSchema;
 			}
 		}
 	@endphp
-	@include('web.common.hreflang', ['alternateUrls' => $catalogAlternateUrls])
 	@include('web.common.json-ld', ['jsonLdGraphs' => $catalogJsonLdGraphs])
 @endpush
 

@@ -10,13 +10,27 @@
 		<meta name="author" content="Creative Web Studio" />
 		<title>{{ $metaTitle ?? config('app.name') }}</title>
 		<meta name="description" content="{{ $metaDescription ?? config('app.name') }}"/>
+		@if(!empty($seoRobots))
+		<meta name="robots" content="{{ $seoRobots }}">
+		@endif
+		@if(!empty($seoCanonical))
+		<link rel="canonical" href="{{ $seoCanonical }}">
+		@endif
+		@if(!empty($seoAlternates) && is_array($seoAlternates))
+			@foreach($seoAlternates as $hreflangLocale => $href)
+		<link rel="alternate" hreflang="{{ $hreflangLocale }}" href="{{ $href }}">
+			@endforeach
+			@if(!empty($seoAlternates['it']))
+		<link rel="alternate" hreflang="x-default" href="{{ $seoAlternates['it'] }}">
+			@endif
+		@endif
 		@stack('meta')
 		@if(!empty($metaImage))
 		<meta property="og:type" content="website" />
 		<meta property="og:title" content="{{ $metaTitle ?? config('app.name') }}" />
 		<meta property="og:description" content="{{ $metaDescription ?? config('app.name') }}" />
 		<meta property="og:image" content="{{ $metaImage }}" />
-		<meta property="og:url" content="{{ url()->current() }}" />
+		<meta property="og:url" content="{{ $seoCanonical ?? url()->current() }}" />
 		<meta name="twitter:card" content="summary_large_image" />
 		<meta name="twitter:image" content="{{ $metaImage }}" />
 		@endif

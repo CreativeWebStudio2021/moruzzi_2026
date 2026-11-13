@@ -3,18 +3,13 @@
 @section('content')
 
 @push('meta')
-	<link rel="canonical" href="{{ $alternateUrls[app()->getLocale()] }}">
-	@foreach($alternateUrls as $locale => $href)
-		<link rel="alternate" hreflang="{{ $locale }}" href="{{ $href }}">
-	@endforeach
-	<link rel="alternate" hreflang="x-default" href="{{ $alternateUrls['it'] }}">
 	@php
 		$sitemapSchema = [
 			'@context' => 'https://schema.org',
 			'@type' => 'WebPage',
 			'name' => __('sitemap.title'),
 			'description' => __('sitemap.meta_description'),
-			'url' => $alternateUrls[app()->getLocale()],
+			'url' => $seoCanonical ?? ($alternateUrls[app()->getLocale()] ?? url('/')),
 			'inLanguage' => app()->getLocale(),
 			'isPartOf' => [
 				'@type' => 'WebSite',

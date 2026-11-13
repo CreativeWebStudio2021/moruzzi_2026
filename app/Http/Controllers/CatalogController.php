@@ -75,6 +75,9 @@ class CatalogController extends Controller
             'hasMore' => $total > $perPage,
             'openCategoryIds' => $openCategoryIds,
             'guideLinks' => $guideLinks,
+            'catalogAlternateUrls' => $category
+                ? $this->categoryAlternateUrls($category)
+                : $this->catalogIndexAlternateUrls(),
         ]);
     }
 
@@ -110,19 +113,12 @@ class CatalogController extends Controller
             abort(404);
         }
 
-        $canonical = ltrim((string) ($category->{$linkColumn} ?? $category->link_it), '/');
-        $shouldRedirectToCanonical = false;
+        // Preferisci il link localizzato se valorizzato; altrimenti IT.
+        $localizedLink = trim((string) ($category->{$linkColumn} ?? ''));
+        $canonical = ltrim($localizedLink !== '' ? $localizedLink : (string) $category->link_it, '/');
 
+        // 301 verso path canonico della lingua (evita link_it sotto /en/, /fr/, …)
         if (strtolower($canonical) !== strtolower($path)) {
-            foreach (category_link_alternates($path) as $alternate) {
-                if (strtolower($alternate) === strtolower($canonical)) {
-                    $shouldRedirectToCanonical = true;
-                    break;
-                }
-            }
-        }
-
-        if ($shouldRedirectToCanonical) {
             $prefix = $locale === 'it' ? '' : $locale.'/';
 
             return redirect()->to(url($prefix.$canonical), 301);
@@ -172,7 +168,45 @@ class CatalogController extends Controller
             'hasMore' => $total > $perPage,
             'openCategoryIds' => $openCategoryIds,
             'guideLinks' => $guideLinks,
+            'catalogAlternateUrls' => $this->categoryAlternateUrls($category),
         ]);
+    }
+
+    /**
+     * Hreflang solo per lingue con link_xx valorizzato (niente fallback IT mascherato).
+     *
+     * @return array<string, string>
+     */
+    private function categoryAlternateUrls(Category $category): array
+    {
+        $urls = [];
+        foreach (['it', 'en', 'es', 'fr', 'de'] as $locale) {
+            $link = trim((string) ($category->{'link_'.$locale} ?? ''));
+            if ($link === '') {
+                continue;
+            }
+            $urls[$locale] = category_url((int) $category->entity_id, $locale);
+        }
+
+        return $urls;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function catalogIndexAlternateUrls(): array
+    {
+        $urls = [];
+        foreach (['it', 'en', 'es', 'fr', 'de'] as $locale) {
+            $slug = (string) ((config('localized_slugs')['catalog.index'][$locale] ?? ''));
+            if ($slug === '') {
+                continue;
+            }
+            $prefix = $locale === 'it' ? '' : $locale.'/';
+            $urls[$locale] = url($prefix.$slug);
+        }
+
+        return $urls;
     }
 
     /**

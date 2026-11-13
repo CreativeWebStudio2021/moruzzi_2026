@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Category;
 use App\Listeners\MergeCartAfterLogin;
 use App\Services\MetaTagsService;
+use App\Services\Seo\PageSeoService;
 use App\Support\GuideRegistry;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Event;
@@ -63,6 +64,11 @@ class AppServiceProvider extends ServiceProvider
             $view->with('metaTitle', $meta['title'])
                 ->with('metaDescription', $meta['description'])
                 ->with('metaImage', $meta['image'] ?? '');
+
+            $seo = app(PageSeoService::class)->forRequest(request(), $view->getData());
+            $view->with('seoCanonical', $seo['canonical'])
+                ->with('seoRobots', $seo['robots'])
+                ->with('seoAlternates', $seo['alternates']);
 
             // Categorie menu: solo quando serve il layout completo (mai sulle error page standalone).
             $view->with('tags', cache_remember_safe(

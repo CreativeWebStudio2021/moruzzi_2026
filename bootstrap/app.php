@@ -33,6 +33,7 @@ return Application::configure(basePath: dirname(__DIR__))
 		]);
 
 		$middleware->web(append: [
+			\App\Http\Middleware\NormalizeSeoRequest::class,
 			\App\Http\Middleware\RememberGuestCartSession::class,
 		]);
 
