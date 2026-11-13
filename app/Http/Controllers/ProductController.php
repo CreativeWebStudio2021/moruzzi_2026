@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Services\CartService;
 use App\Services\GuideCommerceService;
 use App\Services\ProductAvailabilityService;
+use App\Services\Seo\ProductJsonLdBuilder;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -137,6 +138,10 @@ class ProductController extends Controller
 		$cartQuantity = $this->cartItemQuantity($product->entity_id);
 		$guideLinks = $this->guideCommerce->guideLinksForProduct($product);
 
+		$productJsonLd = app(ProductJsonLdBuilder::class);
+		$productJsonLdGraphs = $productJsonLd->graphs($product, $categories, $locale);
+		$productAlternateUrls = $productJsonLd->alternateUrls($product);
+
 		return view('web.prodotti_dett', compact(
 			'product',
 			'categories',
@@ -144,6 +149,8 @@ class ProductController extends Controller
 			'availableQuantity',
 			'cartQuantity',
 			'guideLinks',
+			'productJsonLdGraphs',
+			'productAlternateUrls',
 		));
 	}
 

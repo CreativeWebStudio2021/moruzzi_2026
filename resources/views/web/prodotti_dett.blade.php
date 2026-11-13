@@ -1,5 +1,10 @@
 @extends('web.layout')
 
+@push('meta')
+	@include('web.common.hreflang', ['alternateUrls' => $productAlternateUrls ?? []])
+	@include('web.common.json-ld', ['jsonLdGraphs' => $productJsonLdGraphs ?? []])
+@endpush
+
 @section('content')
 
 @push('styles')
