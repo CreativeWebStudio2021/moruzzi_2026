@@ -54,8 +54,6 @@ class SitemapService
                     'home' => __('catalog.home'),
                     'catalog.index' => __('menu.categorie'),
                     'contact.form' => __('menu.contatti'),
-                    'cart.index' => __('seo.cart'),
-                    'account.register.page' => __('seo.register'),
                 ]),
             ],
             [
@@ -154,9 +152,31 @@ class SitemapService
     public function categoryUrl(Category $category, string $locale): string
     {
         $linkColumn = $locale === 'it' ? 'link_it' : 'link_'.$locale;
-        $link = $category->{$linkColumn} ?? $category->link_it;
+        $link = trim((string) ($category->{$linkColumn} ?? ''));
+        if ($link === '') {
+            $link = (string) $category->link_it;
+        }
 
-        return $this->localizedUrl($locale, (string) $link);
+        return $this->localizedUrl($locale, $link);
+    }
+
+    /**
+     * Alternates categoria: solo lingue con link_xx valorizzato.
+     *
+     * @return array<string, string>
+     */
+    public function categoryAlternateUrls(Category $category): array
+    {
+        $alternates = [];
+        foreach (self::LOCALES as $locale) {
+            $link = trim((string) ($category->{'link_'.$locale} ?? ''));
+            if ($link === '') {
+                continue;
+            }
+            $alternates[$locale] = $this->localizedUrl($locale, $link);
+        }
+
+        return $alternates;
     }
 
     public function productUrl(Product $product, string $locale): string
@@ -199,7 +219,7 @@ class SitemapService
     {
         foreach ($this->staticXmlRoutes() as $routeName) {
             yield $this->xmlEntryFromAlternates(
-                fn (string $locale) => $this->routeUrl($locale, $routeName)
+                fn (string $locale) => route_url_for_locale($routeName, $locale)
             );
         }
 
@@ -210,15 +230,20 @@ class SitemapService
         }
 
         foreach ($this->allPublicCategories() as $category) {
-            yield $this->xmlEntryFromAlternates(
-                fn (string $locale) => $this->categoryUrl($category, $locale)
-            );
+            $alternates = $this->categoryAlternateUrls($category);
+            if ($alternates === [] || empty($alternates['it'])) {
+                continue;
+            }
+
+            yield [
+                'loc' => $alternates['it'],
+                'lastmod' => null,
+                'alternates' => $alternates,
+            ];
         }
 
         foreach ($this->visibleProductsQuery(['entity_id', 'name', 'data_inserimento'])->lazy(200) as $product) {
-            $lastmod = $product->data_inserimento
-                ? date('Y-m-d', strtotime((string) $product->data_inserimento))
-                : null;
+            $lastmod = $this->productLastmod($product);
 
             yield $this->xmlEntryFromAlternates(
                 fn (string $locale) => $this->productUrl($product, $locale),
@@ -361,12 +386,11 @@ class SitemapService
 
     protected function staticXmlRoutes(): array
     {
+        // Solo pagine indicizzabili (niente cart/account/checkout).
         return [
             'home',
             'catalog.index',
             'contact.form',
-            'cart.index',
-            'account.register.page',
             'about.presentation',
             'about.staff',
             'about.loredana',
@@ -396,6 +420,18 @@ class SitemapService
             'shop.collecting',
             'sitemap',
         ];
+    }
+
+    protected function productLastmod(Product $product): ?string
+    {
+        $raw = trim((string) ($product->data_inserimento ?? ''));
+        if ($raw === '' || $raw === '0000-00-00' || $raw === '0000-00-00 00:00:00') {
+            return null;
+        }
+
+        $ts = strtotime($raw);
+
+        return $ts ? date('Y-m-d', $ts) : null;
     }
 
     protected function allPublicCategories(): Collection
