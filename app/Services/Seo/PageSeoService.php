@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Route;
  */
 class PageSeoService
 {
-    /** Parametri che restano nel canonical (paginazione self-referential). */
-    private const CANONICAL_QUERY_ALLOWLIST = ['page'];
-
     /** Parametri che rendono la pagina noindex,follow (canonical pulito senza di essi). */
     private const NOINDEX_QUERY_PARAMS = [
         'q', 'order', 'direction', 'per_page', 'category', 'offerte',
@@ -56,18 +53,23 @@ class PageSeoService
             ? $alternates[$locale]
             : (is_string($alternates['it'] ?? null) ? $alternates['it'] : null);
 
-        $hasNoindexQuery = $this->hasNoindexQuery($request);
+        $rawQuery = $this->rawQueryParams($request);
+        $hasNoindexQuery = $this->hasNoindexQuery($rawQuery);
         $isPrivateRoute = $this->isNoindexRoute($request);
+        $page = (int) ($rawQuery['page'] ?? 0);
 
         if ($hasNoindexQuery) {
-            $canonical = $canonicalFromAlternates ?: $this->absoluteCleanUrl($request, includePage: false);
+            // Canonical pulito (senza tracking/filtri); page esclusa
+            $canonical = $canonicalFromAlternates ?: $this->absoluteCleanUrl($request, page: 0);
             $robots = 'noindex,follow';
         } elseif ($isPrivateRoute) {
-            $canonical = $this->absoluteCleanUrl($request, includePage: false);
+            $canonical = $this->absoluteCleanUrl($request, page: 0);
             $robots = 'noindex,follow';
             $alternates = [];
         } else {
-            $canonical = $canonicalFromAlternates ?: $this->absoluteCleanUrl($request, includePage: true);
+            // Paginazione: canonical autoreferenziale (?page=N per N>1, mai forzato a page 1)
+            $base = $canonicalFromAlternates ?: $this->absoluteCleanUrl($request, page: 0);
+            $canonical = ($page > 1) ? $base.'?page='.$page : $base;
             $robots = null;
         }
 
@@ -145,12 +147,39 @@ class PageSeoService
         return $urls;
     }
 
-    private function hasNoindexQuery(Request $request): bool
+    /**
+     * Query string originale del client (ignora valori injectati con Request::merge).
+     *
+     * @return array<string, mixed>
+     */
+    private function rawQueryParams(Request $request): array
+    {
+        $qs = (string) $request->server->get('QUERY_STRING', '');
+        if ($qs === '') {
+            return [];
+        }
+
+        $parsed = [];
+        parse_str($qs, $parsed);
+
+        return is_array($parsed) ? $parsed : [];
+    }
+
+    /**
+     * @param  array<string, mixed>  $rawQuery
+     */
+    private function hasNoindexQuery(array $rawQuery): bool
     {
         foreach (self::NOINDEX_QUERY_PARAMS as $param) {
-            if ($request->query->has($param) && $request->query($param) !== null && $request->query($param) !== '') {
-                return true;
+            if (! array_key_exists($param, $rawQuery)) {
+                continue;
             }
+            $value = $rawQuery[$param];
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            return true;
         }
 
         return false;
@@ -173,24 +202,16 @@ class PageSeoService
         return in_array($bare, self::NOINDEX_ROUTE_NAMES, true);
     }
 
-    private function absoluteCleanUrl(Request $request, bool $includePage): string
+    private function absoluteCleanUrl(Request $request, int $page = 0): string
     {
         $path = '/'.ltrim($request->path(), '/');
         if ($path !== '/') {
             $path = rtrim($path, '/');
         }
 
-        $query = [];
-        if ($includePage) {
-            $page = (int) $request->query('page', 0);
-            if ($page > 1) {
-                $query['page'] = $page;
-            }
-        }
-
         $url = url($path);
-        if ($query !== []) {
-            $url .= '?'.http_build_query($query);
+        if ($page > 1) {
+            $url .= '?page='.$page;
         }
 
         return $url;

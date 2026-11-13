@@ -124,9 +124,7 @@ class CatalogController extends Controller
             return redirect()->to(url($prefix.$canonical), 301);
         }
         
-        // Simula richiesta a index() con category impostata
-        $request->merge(['category' => $category->entity_id]);
-
+        // Non fare merge di `category` nella query string: sporcherebbe il noindex SEO.
         $this->syncSessionFromRequest($request);
 
         $categoryId = (string) $category->entity_id;
