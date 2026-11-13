@@ -69,13 +69,14 @@ class ProductController extends Controller
 			abort(404);
 		}
 
-		// Non disponibile ma ancora in catalogo: 301 verso categoria principale (deindicizzazione + UX).
+		// Non disponibile: 410 Gone senza dati del pezzo (non indicizzabile).
 		$availableQuantity = app(ProductAvailabilityService::class)->computeForProduct($product);
 		if ((int) ($product->disponibili ?? 0) <= 0 || $availableQuantity <= 0) {
-			return redirect()->to(
-				product_delisted_redirect_url($product, $locale),
-				301
-			);
+			return response()->view('web.prodotti.gone', [
+				'categoryUrl' => product_primary_category_url($product, $locale),
+				'newArrivalsUrl' => category_url(1436, $locale),
+				'sellUrl' => locale_route('sell.to_moruzzi'),
+			], 410);
 		}
 
 		/*

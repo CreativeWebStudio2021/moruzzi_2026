@@ -133,9 +133,8 @@ class GuideCommerceService
             return collect();
         }
 
-        $query = Product::query()
-            ->whereIn('visibility', [1, 4])
-            ->where('qty', '>', 0)
+        $query = app(\App\Services\ProductAvailabilityService::class)
+            ->applyPublicAvailabilityConstraints(Product::query())
             ->where(function ($builder) use ($expandedIds) {
                 foreach ($expandedIds as $categoryId) {
                     $builder->orWhere('categorie', 'LIKE', '%@'.$categoryId.'@%');
