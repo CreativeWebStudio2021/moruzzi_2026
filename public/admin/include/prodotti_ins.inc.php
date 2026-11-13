@@ -77,6 +77,12 @@ if($stato=="inviato")
 	
 	$_POST['url_key'] = str_replace("_","-",to_htaccess_url($_POST['name'],""));
 	$_POST['name'] = str_replace("`","'",$_POST['name']);
+	if (isset($_POST['description'])) {
+		$_POST['description'] = $oggetto_admin->ripara_html_descrizione($_POST['description']);
+	}
+	if (isset($_POST['short_description'])) {
+		$_POST['short_description'] = $oggetto_admin->ripara_html_descrizione($_POST['short_description']);
+	}
 	$_POST['disponibili'] = $_POST['qty'];
 	$_POST['visibility'] = '1';
 	$_POST['status'] = '1';

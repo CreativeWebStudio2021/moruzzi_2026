@@ -1996,6 +1996,23 @@ class Functions_adm extends Config {
 		return $def;
 	}
 
+	/**
+	 * Ripara solo sintassi tipica dei tag HTML nelle descrizioni prodotto
+	 * (es. "<b<" → "<b>", "</b<" → "</b>", "</b," → "</b>,").
+	 * Non riscrive il testo editoriale.
+	 */
+	public function ripara_html_descrizione($html)
+	{
+		if ($html === null || $html === '') {
+			return $html;
+		}
+		$s = (string) $html;
+		$s = preg_replace('/<\/\s*([a-zA-Z][a-zA-Z0-9]*),/', '</$1>,', $s);
+		$s = preg_replace('/<\/\s*([a-zA-Z][a-zA-Z0-9]*)<+/', '</$1>', $s);
+		$s = preg_replace('/<([a-zA-Z][a-zA-Z0-9]*)<+/', '<$1>', $s);
+		return $s;
+	}
+
 	public function to_htaccess_url($str_in, $sito, $subdir="",$len="",$words="")
 	{
 		$caratteri_permessi = array("_","(",")");

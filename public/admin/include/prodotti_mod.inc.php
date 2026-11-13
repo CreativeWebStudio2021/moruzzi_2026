@@ -132,6 +132,12 @@ if($stato=="inviato")
 	
 	$_POST['name'] = str_replace("`","'",$_POST['name']);
 	$_POST['url_key'] = str_replace(" ","-",$_POST['url_key']);
+	if (isset($_POST['description'])) {
+		$_POST['description'] = $oggetto_admin->ripara_html_descrizione($_POST['description']);
+	}
+	if (isset($_POST['short_description'])) {
+		$_POST['short_description'] = $oggetto_admin->ripara_html_descrizione($_POST['short_description']);
+	}
 
 	unset($_POST['selected']);
 	

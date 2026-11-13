@@ -1,0 +1,112 @@
+{
+    "generated_at": "2026-11-13T16:17:12+00:00",
+    "scope_note": "Prodotti: un solo set IT (description, short_description). Nessuna colonna description_en/de/fr/es sui prodotti. Categorie: campi per lingua.",
+    "products_it": {
+        "description": {
+            "nonempty": 25684,
+            "malformed_rows": 243,
+            "malformed_open_b": 86,
+            "malformed_close_comma_or_lt": 76,
+            "unbalanced_tags": 242,
+            "fixed": 243,
+            "failed": 0,
+            "examples": [
+                {
+                    "id": 3718,
+                    "before": "Impero Romano, Egitto, AURELIANO e VABALLATO, 270-275 d.C., BRONZO, Emissione: 271-272 d.C., D/ bust",
+                    "after": "Impero Romano, Egitto, AURELIANO e VABALLATO, 270-275 d.C., BRONZO, Emissione: 271-272 d.C., D/ bust"
+                },
+                {
+                    "id": 11172,
+                    "before": "Repubblica Romana, <b>POMPEO MAGNO</b>, <b>DENARIO</b>, Emissione: <b>42-40 a.",
+                    "after": "Repubblica Romana, <b>POMPEO MAGNO</b>, <b>DENARIO</b>, Emissi"
+                },
+                {
+                    "id": 13178,
+                    "before": "Italia, Vittorio Emanuele III, BANCA D'ITALIA, 1000 LIRE, grande M - Barbetti modificato (fascio II)",
+                    "after": " numeri di serie consecutivi. <b>Qui sotto trovate le altre banconote di "
+                },
+                {
+                    "id": 13179,
+                    "before": "Italia, Vittorio Emanuele III, BANCA D'ITALIA, 1000 LIRE, grande M - Barbetti modificato (fascio II)",
+                    "after": " numeri di serie consecutivi. <b>Qui sotto trovate le altre banconote di "
+                },
+                {
+                    "id": 13180,
+                    "before": "Italia, Vittorio Emanuele III, BANCA D'ITALIA, 1000 LIRE, grande M - Barbetti modificato (fascio II)",
+                    "after": " numeri di serie consecutivi. <b>Qui sotto trovate le altre banconote di "
+                }
+            ]
+        },
+        "short_description": {
+            "nonempty": 25685,
+            "malformed_rows": 35,
+            "malformed_open_b": 17,
+            "malformed_close_comma_or_lt": 2,
+            "unbalanced_tags": 35,
+            "fixed": 35,
+            "failed": 0,
+            "examples": [
+                {
+                    "id": 11172,
+                    "before": "<b>POMPEO MAGNO</b>, <b>DENARIO</b>, Emissione: <b>42-40 a.C.</b>, Zecca <b",
+                    "after": "<b>POMPEO MAGNO</b>, <b>DENARIO</b>, Emissione: <b>42-40 a.C.</b"
+                },
+                {
+                    "id": 11752,
+                    "before": "b>; Cohen, 113; Metallo: <b>AR</b<, gr. 6,13, (MR7988), Diam.: mm. 23,54, ",
+                    "after": "<b>ELAGABALO</b>, 218 d.C., <b>ANTONINIANO</b>, Emissione: <b>218-219 d"
+                },
+                {
+                    "id": 16207,
+                    "before": "<b>Visita all'ONU a New York</b>, Emissione: <AN IV<b> (1966), <b>Opus L",
+                    "after": "<b>Visita all'ONU a New York</b>, Emissione"
+                },
+                {
+                    "id": 16307,
+                    "before": "Emissione: <b>1946 ANNO VIII</b>, Zecca di </b>Roma</b>, Rif. bibl. Paga",
+                    "after": "Emissione: <b>1946 ANNO VIII</b>, Zecca di <b>Roma</b>"
+                },
+                {
+                    "id": 16311,
+                    "before": "Emissione: <b>1944 ANNO VI</b>, Zecca di </b>Roma</b>, Rif. bibl. Paga",
+                    "after": "Emissione: <b>1944 ANNO VI</b>, Zecca di <b>Roma</b>, "
+                }
+            ]
+        }
+    },
+    "categories_by_lang": {
+        "it": {
+            "malformed": 0,
+            "examples": [],
+            "nonempty": 477
+        },
+        "en": {
+            "malformed": 0,
+            "examples": [],
+            "nonempty": 477
+        },
+        "de": {
+            "malformed": 0,
+            "examples": [],
+            "nonempty": 477
+        },
+        "fr": {
+            "malformed": 0,
+            "examples": [],
+            "nonempty": 477
+        },
+        "es": {
+            "malformed": 0,
+            "examples": [],
+            "nonempty": 477
+        }
+    },
+    "failures": [],
+    "files": {
+        "fix": "seo-audit/html-fix/fix-product-description-html.sql",
+        "backup": "seo-audit/html-fix/backup-product-description-html.sql",
+        "rollback": "seo-audit/html-fix/rollback-product-description-html.sql",
+        "generator": "seo-audit/html-fix/generate_fix.php"
+    }
+}

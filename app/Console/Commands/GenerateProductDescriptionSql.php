@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\DB;
  */
 class GenerateProductDescriptionSql extends Command
 {
+    /** @deprecated Disabilitato: non usare. I SQL generati sono stati rimossi. */
+    protected $hidden = true;
+
     protected $signature = 'seo:generate-product-descriptions
                             {--limit=0 : Limita i prodotti (0 = tutti i disponibili)}
                             {--outdir=seo-audit/sql : Directory di output}';
@@ -21,6 +24,9 @@ class GenerateProductDescriptionSql extends Command
 
     public function handle(ProductDescriptionBuilder $builder, ProductAvailabilityService $availability): int
     {
+        $this->error('Generatore disabilitato per decisione editoriale. Non esegue nulla.');
+        return self::FAILURE;
+        // --- codice sotto lasciato come riferimento, non raggiungibile ---
         $outdir = base_path((string) $this->option('outdir'));
         if (! is_dir($outdir) && ! mkdir($outdir, 0755, true) && ! is_dir($outdir)) {
             $this->error("Impossibile creare {$outdir}");
