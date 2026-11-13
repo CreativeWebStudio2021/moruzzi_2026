@@ -13,35 +13,56 @@ final class ProductAttributeExtractor
      */
     public function additionalProperties(string $name, string $shortDescription, string $description = ''): array
     {
-        $plain = $this->plainText($shortDescription.' '.$description.' '.$name);
+        $attrs = $this->extractAll($name, $shortDescription, $description);
+        $labels = [
+            'emission' => 'Anno / emissione',
+            'mint' => 'Zecca',
+            'metal' => 'Metallo',
+            'weight' => 'Peso',
+            'diameter' => 'Diametro',
+            'mintage' => 'Tiratura',
+            'grade' => 'Conservazione',
+            'bibliography' => 'Riferimento di catalogo',
+        ];
+
         $props = [];
-
-        $year = $this->extractEmission($plain);
-        if ($year !== '') {
-            $props[] = ['name' => 'Anno / emissione', 'value' => $year];
-        }
-
-        $mint = $this->extractMint($plain);
-        if ($mint !== '') {
-            $props[] = ['name' => 'Zecca', 'value' => $mint];
-        }
-
-        $metal = $this->extractMetal($plain);
-        if ($metal !== '') {
-            $props[] = ['name' => 'Metallo', 'value' => $metal];
-        }
-
-        $grade = $this->extractGrade($plain);
-        if ($grade !== '') {
-            $props[] = ['name' => 'Conservazione', 'value' => $grade];
-        }
-
-        $biblio = $this->extractBibliography($plain);
-        if ($biblio !== '') {
-            $props[] = ['name' => 'Riferimento di catalogo', 'value' => $biblio];
+        foreach ($labels as $key => $label) {
+            if (($attrs[$key] ?? '') !== '') {
+                $props[] = ['name' => $label, 'value' => $attrs[$key]];
+            }
         }
 
         return $props;
+    }
+
+    /**
+     * Attributi grezzi estratti solo dal testo presente (nessun valore inventato).
+     *
+     * @return array{
+     *   emission: string,
+     *   mint: string,
+     *   metal: string,
+     *   weight: string,
+     *   diameter: string,
+     *   mintage: string,
+     *   grade: string,
+     *   bibliography: string
+     * }
+     */
+    public function extractAll(string $name, string $shortDescription, string $description = ''): array
+    {
+        $plain = $this->plainText($shortDescription.' '.$description.' '.$name);
+
+        return [
+            'emission' => $this->extractEmission($plain),
+            'mint' => $this->extractMint($plain),
+            'metal' => $this->extractMetal($plain),
+            'weight' => $this->extractWeight($plain),
+            'diameter' => $this->extractDiameter($plain),
+            'mintage' => $this->extractMintage($plain),
+            'grade' => $this->extractGrade($plain),
+            'bibliography' => $this->extractBibliography($plain),
+        ];
     }
 
     private function plainText(string $html): string
@@ -108,6 +129,39 @@ final class ProductAttributeExtractor
     {
         if (preg_match('/\b(mSPL|qSPL|qFDC|qBB|SPL|BB|MB|FDS|FDC|UNC|AU|VF|EF)\b/i', $text, $m)) {
             return strtoupper($m[1]);
+        }
+
+        return '';
+    }
+
+    private function extractWeight(string $text): string
+    {
+        if (preg_match('/(?:gr\.?|g\.?)\s*([0-9]+(?:[.,][0-9]+)?)/i', $text, $m)) {
+            return str_replace(',', '.', $m[1]).' g';
+        }
+        if (preg_match('/peso[:\s]+([0-9]+(?:[.,][0-9]+)?)\s*(?:gr|g)\b/i', $text, $m)) {
+            return str_replace(',', '.', $m[1]).' g';
+        }
+
+        return '';
+    }
+
+    private function extractDiameter(string $text): string
+    {
+        if (preg_match('/(?:Diam\.?|diametro)[:\s]*mm\.?\s*([0-9]+(?:[.,][0-9]+)?)/i', $text, $m)) {
+            return str_replace(',', '.', $m[1]).' mm';
+        }
+        if (preg_match('/\bmm\.?\s*([0-9]+(?:[.,][0-9]+)?)/i', $text, $m)) {
+            return str_replace(',', '.', $m[1]).' mm';
+        }
+
+        return '';
+    }
+
+    private function extractMintage(string $text): string
+    {
+        if (preg_match('/[Tt]iratura[:\s]+([0-9][0-9\.\,\s]*[0-9]|[0-9]+)/u', $text, $m)) {
+            return trim(preg_replace('/\s+/', ' ', $m[1]) ?? '');
         }
 
         return '';
