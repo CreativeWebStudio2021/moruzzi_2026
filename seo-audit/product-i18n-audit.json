@@ -1,0 +1,46 @@
+{
+    "generated_at": "2026-11-17T15:04:20+00:00",
+    "prodotti": {
+        "total": 25718,
+        "public_visibility_1_or_4": 22353,
+        "available_public": 4529,
+        "sold_or_unavailable_public": 17824,
+        "locale_columns": [],
+        "available_with_name": 4529,
+        "available_with_description": 4529,
+        "available_with_short_description": 4529,
+        "available_with_meta_title": 15,
+        "available_with_meta_description": 15,
+        "i18n_title_it_pct_on_localized_pages": 100,
+        "i18n_description_it_pct_on_localized_pages": 100
+    },
+    "categorie_new": {
+        "total": 480,
+        "per_locale": {
+            "en": {
+                "name_filled": 323,
+                "description_filled": 477,
+                "name_pct": 67.3,
+                "description_pct": 99.4
+            },
+            "de": {
+                "name_filled": 325,
+                "description_filled": 477,
+                "name_pct": 67.7,
+                "description_pct": 99.4
+            },
+            "fr": {
+                "name_filled": 337,
+                "description_filled": 477,
+                "name_pct": 70.2,
+                "description_pct": 99.4
+            },
+            "es": {
+                "name_filled": 328,
+                "description_filled": 477,
+                "name_pct": 68.3,
+                "description_pct": 99.4
+            }
+        }
+    }
+}
