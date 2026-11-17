@@ -1513,7 +1513,7 @@ return [
   array (
     'paths' => 
     array (
-      'it' => 'monete/monete-italiane.html',
+      'it' => 'monete/monete-italiane-preunitarie.html',
     ),
   ),
   'monete-medievali.html' => 

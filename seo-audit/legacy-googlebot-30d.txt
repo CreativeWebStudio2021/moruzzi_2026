@@ -1,0 +1,31 @@
+# Legacy URL richiesti da Googlebot (estratti da moruzzi.it-ssl-access.log)
+# Fonte grezza: seo-audit/legacy-googlebot-30d-raw.txt (2273 URL unici, ~6941 hit)
+
+## Decisioni applicate (commit redirect legacy)
+
+### 410 Gone
+- /lang[1-6]/images/*
+- /lang[1-6]/x5feed.php
+- /lang[1-6]/*.{png,jpg,jpeg,gif,webp,ico,svg,css,js}
+
+### 301 → equivalente categoria (lookup su link_it/en/fr/de/es)
+Esempi top hit:
+- /billets.html → /fr/billets.html (Banconote)
+- /monnaies.html → /fr/monnaies.html (Monete)
+- /monedas.html → /es/monedas.html
+- /special-offers.html → /offerte-speciali.html (via map file → IT)
+- /neuzugange.html → /ultimi-arrivi.html
+- /nuevas-articulos.html → /ultimi-arrivi.html
+- /monete/monete-italiane.html → /monete/monete-italiane-preunitarie.html (override statico corretto)
+
+### 301 → route editoriali (legacy_redirects.files)
+- conditions_of_sale.html → shop.terms
+- garantie_moruzzi_numismatica.html → certifications.guarantee
+- qualitativer_standard.html → certifications.standard
+- abbreviazioni / abbreviations → shop.abbreviations
+
+### Lasciati 404 (nessun equivalente utile)
+- /materiale_di_scena.html
+- /flavia_2007.html e pagine evento one-off
+- /pop_up/*
+- Path con typo irreparabile (/mnzen/... senza mapping)

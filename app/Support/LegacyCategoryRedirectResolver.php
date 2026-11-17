@@ -24,7 +24,7 @@ class LegacyCategoryRedirectResolver
         'monete_romane_provinciali' => 'monete/monete-romane-provinciali.html',
         'monete_greche' => 'monete/monete-greche.html',
         'monete_bizantine' => 'monete/monete-bizantine.html',
-        'monete_italiane' => 'monete/monete-italiane.html',
+        'monete_italiane' => 'monete/monete-italiane-preunitarie.html',
         'monete_moderne' => 'monete/monete-moderne.html',
         'monete_medievali' => 'monete/monete-medievali.html',
     ];
