@@ -3,12 +3,9 @@
 @push('meta')
 	@php
 		$homeJsonLd = app(\App\Services\Seo\OrganizationJsonLdBuilder::class)->websiteWithOrganization();
-		$homeAlternateUrls = [];
-		foreach (['it', 'en', 'es', 'fr', 'de'] as $homeLocale) {
-			$homeAlternateUrls[$homeLocale] = $homeLocale === 'it' ? url('/') : url('/'.$homeLocale);
-		}
 	@endphp
-	@include('web.common.hreflang', ['alternateUrls' => $homeAlternateUrls])
+	{{-- Canonical/hreflang: solo dal layout (PageSeoService). Niente include hreflang qui:
+	     @push gira prima del composer e duplicava canonical/hreflang. --}}
 	@include('web.common.json-ld', ['jsonLdGraphs' => [$homeJsonLd]])
 @endpush
 

@@ -1,13 +1,6 @@
-{{-- Canonical/hreflang emessi dal layout via PageSeoService.
-     Questo partial resta per compatibilità: popola seoAlternates se il composer
-     non li ha ancora visti (stack meta dopo il composer). --}}
+{{-- Solo alternate/hreflang di fallback. Il canonical è emesso esclusivamente
+     da web/layout via PageSeoService ($seoCanonical), per evitare tag doppi. --}}
 @if(!empty($alternateUrls) && is_array($alternateUrls) && empty($seoAlternates))
-	@php
-		$canonicalUrl = $alternateUrls[app()->getLocale()] ?? ($alternateUrls['it'] ?? reset($alternateUrls));
-	@endphp
-	@if($canonicalUrl)
-		<link rel="canonical" href="{{ $canonicalUrl }}">
-	@endif
 	@foreach($alternateUrls as $hreflangLocale => $href)
 		<link rel="alternate" hreflang="{{ $hreflangLocale }}" href="{{ $href }}">
 	@endforeach
