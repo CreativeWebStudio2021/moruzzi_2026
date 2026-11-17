@@ -138,6 +138,25 @@ if (! function_exists('localized_url')) {
             }
         }
 
+        // Reverse-lookup su localized_slugs: evita /es/qui-sommes-nous dal selettore lingua
+        if ($path !== '') {
+            foreach (config('localized_slugs', []) as $routeName => $paths) {
+                if (! is_array($paths)) {
+                    continue;
+                }
+                foreach ($paths as $ownerLocale => $slug) {
+                    if (! is_string($slug) || trim($slug, '/') !== $path) {
+                        continue;
+                    }
+                    try {
+                        return route_url_for_locale((string) $routeName, $locale, []).$queryString;
+                    } catch (\Throwable $e) {
+                        break 2;
+                    }
+                }
+            }
+        }
+
         return $locale === 'it'
             ? url($path ?: '/').$queryString
             : url($locale.'/'.($path ?: '')).$queryString;

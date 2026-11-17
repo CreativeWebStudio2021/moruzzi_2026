@@ -272,7 +272,7 @@ Route::group([
         Route::post('/account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
     });
 
-    (require __DIR__.'/localized_aliases.php')();
+    (require __DIR__.'/localized_aliases.php')(true);
 });
 
 
@@ -473,7 +473,7 @@ Route::middleware('setlocale')->group(function () {
         Route::post('/account/password', [AccountController::class, 'updatePassword'])->name('account.password.update');
     });
 
-    (require __DIR__.'/localized_aliases.php')();
+    (require __DIR__.'/localized_aliases.php')(false);
 
     /*
     |--------------------------------------------------------------------------

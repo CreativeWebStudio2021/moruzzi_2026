@@ -23,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
 		$middleware->prepend(\App\Http\Middleware\RedirectLegacyShop::class);
 		$middleware->prepend(\App\Http\Middleware\RedirectLegacyPdf::class);
 		$middleware->prepend(\App\Http\Middleware\RedirectLegacyWww::class);
+		$middleware->prepend(\App\Http\Middleware\EnforceLocalizedSlug::class);
 		$middleware->prepend(\App\Http\Middleware\CanonicalHostAndFontCors::class);
 		// Prepend per ultimo => eseguito per primo: la manutenzione ha priorita.
 		$middleware->prepend(\App\Http\Middleware\MaintenanceMode::class);

@@ -13,8 +13,11 @@ use Illuminate\Support\Facades\Route;
 
 /**
  * Registra path alternativi tradotti (oltre ai path italiani già nominati in web.php).
+ *
+ * @param  bool  $registerForeign  false nel gruppo IT (niente /qui-sommes-nous root);
+ *                                 true nel gruppo {locale} (match + EnforceLocalizedSlug → 301).
  */
-return function (): void {
+return function (bool $registerForeign = false): void {
     $handlers = [
         'home' => fn () => app(HomeController::class)->index(request()),
         'catalog.index' => [CatalogController::class, 'index'],
@@ -117,8 +120,13 @@ return function (): void {
         }
     };
 
+    // Gruppo IT: nessuno slug estero a root (EnforceLocalizedSlug fa 301 → slug IT).
+    if (! $registerForeign) {
+        return;
+    }
+
     foreach (config('localized_slugs', []) as $routeName => $paths) {
-        if (! isset($handlers[$routeName])) {
+        if (! isset($handlers[$routeName]) || ! is_array($paths)) {
             continue;
         }
 
@@ -126,11 +134,10 @@ return function (): void {
         $handler = $handlers[$routeName];
         $routeMiddleware = $middleware[$routeName] ?? null;
 
-        foreach ($paths as $path) {
-            if ($path === $primaryPath) {
+        foreach ($paths as $locale => $path) {
+            if ($locale === 'it' || ! is_string($path) || $path === '' || $path === $primaryPath) {
                 continue;
             }
-
             $registerPath($path, $handler, $routeMiddleware);
         }
     }

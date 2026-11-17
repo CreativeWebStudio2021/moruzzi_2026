@@ -13,7 +13,7 @@
     ];
 @endphp
 @foreach ($aboutNav as $item)
-    <a href="{{ locale_route($item['route']) }}" @class(['active' => request()->routeIs($item['route'])])>
+    <a href="{{ locale_route($item['route']) }}" @class(['active' => locale_route_is($item['route'])])>
         {{ __("about.{$item['key']}.title") }}
     </a>
 @endforeach
