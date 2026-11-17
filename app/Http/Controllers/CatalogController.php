@@ -212,6 +212,11 @@ class CatalogController extends Controller
      */
     public function loadProducts(Request $request)
     {
+        // Endpoint solo AJAX: evita 419/HTML “pagina” per crawler senza CSRF.
+        if (! $request->ajax() && ! $request->expectsJson()) {
+            abort(404);
+        }
+
         $categoryId = $request->input('category');
         $searchQuery = trim((string) $request->input('q', ''));
         $page = max(1, (int) $request->input('page', 1));

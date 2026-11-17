@@ -1,4 +1,8 @@
 User-agent: *
-Disallow:
+Disallow: /catalogo/load-products
+Disallow: /en/catalogo/load-products
+Disallow: /de/catalogo/load-products
+Disallow: /fr/catalogo/load-products
+Disallow: /es/catalogo/load-products
 
 Sitemap: https://www.moruzzi.it/sitemap.xml
