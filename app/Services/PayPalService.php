@@ -293,6 +293,11 @@ class PayPalService
             return true;
         });
 
+        // Fuori dalla transazione: colonne latin1 non devono far fallire lo stato "pagato".
+        if (! $alreadyLogged) {
+            $this->logCartInfo($payload, $txnId);
+        }
+
         if ($newlyPaid) {
             $locale = $this->parseLocaleFromCustom($payload['custom'] ?? null);
             $order = $order->fresh(['items.product']);
@@ -341,10 +346,21 @@ class PayPalService
             'mc_currency'    => $this->clip($payload['mc_currency'] ?? config('paypal.currency', 'EUR'), 5),
             'datecreation'   => now(),
         ]);
+    }
 
-        if ($txnType === 'cart') {
-            $numItems = (int) ($payload['num_cart_items'] ?? 0);
-            for ($i = 1; $i <= $numItems; $i++) {
+    /**
+     * @param  array<string, mixed>  $payload
+     */
+    protected function logCartInfo(array $payload, string $txnId): void
+    {
+        $txnType = (string) ($payload['txn_type'] ?? '');
+        if ($txnType !== 'cart') {
+            return;
+        }
+
+        $numItems = (int) ($payload['num_cart_items'] ?? 0);
+        for ($i = 1; $i <= $numItems; $i++) {
+            try {
                 DB::table('paypal_cart_info')->insert([
                     'txnid'      => $this->clip($txnId, 30),
                     'itemname'   => $this->clip($payload['item_name'.$i] ?? '', 255),
@@ -357,12 +373,18 @@ class PayPalService
                     'invoice'    => $this->clip($payload['invoice'] ?? '', 255),
                     'custom'     => $this->clip($payload['custom'] ?? '', 255),
                 ]);
+            } catch (\Throwable $e) {
+                Log::warning('PayPal cart_info insert skipped', [
+                    'txnid'   => $txnId,
+                    'item'    => $i,
+                    'message' => $e->getMessage(),
+                ]);
             }
         }
     }
 
     /**
-     * Tronca i valori alle dimensioni colonne della tabella legacy mor_paypal_*.
+     * Tronca i valori alle dimensioni colonne della tabella legacy mor_paypal_* (latin1).
      */
     protected function clip(?string $value, int $maxLength): string
     {
@@ -372,7 +394,21 @@ class PayPalService
             return '';
         }
 
-        return mb_strimwidth($value, 0, $maxLength, '');
+        // Colonne latin1_swedish_ci: evita SQLSTATE 1366 su greci/simboli UTF-8.
+        if (function_exists('iconv')) {
+            $converted = @iconv('UTF-8', 'ISO-8859-1//TRANSLIT//IGNORE', $value);
+            if ($converted !== false) {
+                $value = $converted;
+            }
+        }
+
+        $value = preg_replace('/[^\x00-\xFF]/', '', $value) ?? $value;
+
+        if (strlen($value) > $maxLength) {
+            $value = substr($value, 0, $maxLength);
+        }
+
+        return $value;
     }
 
     /**

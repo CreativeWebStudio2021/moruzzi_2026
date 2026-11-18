@@ -16,7 +16,13 @@ class EnsureCheckoutAccess
 
         $guest = session('checkout_guest', []);
 
-        if (!empty($guest['email'])) {
+        if (! empty($guest['email'])) {
+            return $next($request);
+        }
+
+        // Dopo conferma ordine ospite, checkout_guest viene rimosso e resta solo
+        // checkout_order_id: serve per /checkout/paypal/{order} e /checkout/esito/{order}.
+        if (session()->has('checkout_order_id')) {
             return $next($request);
         }
 

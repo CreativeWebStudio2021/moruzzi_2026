@@ -88,7 +88,6 @@ return function (bool $registerForeign = false): void {
     $middleware = [
         'checkout.shipping' => 'checkout.access',
         'checkout.review' => 'checkout.access',
-        'checkout.thankyou' => 'checkout.access',
         'account.dashboard' => 'auth',
         'account.orders' => 'auth',
         'account.orders.show' => 'auth',

@@ -256,9 +256,12 @@ Route::group([
         Route::post('/checkout', [CheckoutController::class, 'storeShipping'])->name('checkout.shipping.store');
         Route::get('/checkout/riepilogo', [CheckoutController::class, 'review'])->name('checkout.review');
         Route::post('/checkout/conferma', [CheckoutController::class, 'confirm'])->name('checkout.confirm');
-        Route::get('/checkout/paypal/{order}', [CheckoutController::class, 'paypalRedirect'])->name('checkout.paypal');
-        Route::get('/checkout/esito/{order}', [CheckoutController::class, 'thankYou'])->name('checkout.thankyou');
     });
+
+    // Fuori da checkout.access: dopo conferma ospite checkout_guest è già stato rimosso;
+    // accesso protetto da canAccessOrder (auth o checkout_order_id).
+    Route::get('/checkout/paypal/{order}', [CheckoutController::class, 'paypalRedirect'])->name('checkout.paypal');
+    Route::get('/checkout/esito/{order}', [CheckoutController::class, 'thankYou'])->name('checkout.thankyou');
 
     Route::middleware('auth')->group(function () {
 
@@ -457,9 +460,12 @@ Route::middleware('setlocale')->group(function () {
         Route::post('/checkout', [CheckoutController::class, 'storeShipping'])->name('checkout.shipping.store');
         Route::get('/checkout/riepilogo', [CheckoutController::class, 'review'])->name('checkout.review');
         Route::post('/checkout/conferma', [CheckoutController::class, 'confirm'])->name('checkout.confirm');
-        Route::get('/checkout/paypal/{order}', [CheckoutController::class, 'paypalRedirect'])->name('checkout.paypal');
-        Route::get('/checkout/esito/{order}', [CheckoutController::class, 'thankYou'])->name('checkout.thankyou');
     });
+
+    // Fuori da checkout.access: dopo conferma ospite checkout_guest è già stato rimosso;
+    // accesso protetto da canAccessOrder (auth o checkout_order_id).
+    Route::get('/checkout/paypal/{order}', [CheckoutController::class, 'paypalRedirect'])->name('checkout.paypal');
+    Route::get('/checkout/esito/{order}', [CheckoutController::class, 'thankYou'])->name('checkout.thankyou');
 
     Route::middleware('auth')->group(function () {
 
